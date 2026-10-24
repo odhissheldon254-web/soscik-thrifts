@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Soscik Admin</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#111110">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout concept: the back office of a matatu sacco. Black control rail,
+   yellow "on" states, receipts for orders. One brand look, colors explicit. */
+:root {
+  --sun: #FFD21F; --sun-soft: #FFF2B3; --ink: #111110; --ink-2: #1D1C18; --line: #DDD6BC;
+  --paper: #FFFAE6; --card: #FFFFFF; --muted: #6A6550; --muted-ink: #B8B29A;
+  --ok: #1F8A4C; --ok-soft: #E3F4EA; --warn: #B76E00; --warn-soft: #FFF0D6; --bad: #C0362C; --bad-soft: #FDE8E5;
+  --f-display: "Anton", Impact, "Arial Narrow", sans-serif;
+  --f-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 15px/1.5 var(--f-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--ink); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.mono { font-family: var(--f-mono); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; }
+
+.shell { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: 100vh; }
+.rail { background: var(--ink); color: var(--paper); padding: 22px 14px; position: sticky; top: env(safe-area-inset-top, 0px); height: 100vh; display: flex; flex-direction: column; gap: 22px; padding-left: max(14px, env(safe-area-inset-left, 0px)); }
+.rail-brand { display: flex; gap: 10px; align-items: center; padding: 0 6px; }
+.rail-brand img { width: 38px; height: 38px; border-radius: 10px; }
+.rail-brand b { font: 400 1.4rem/0.9 var(--f-display); color: var(--sun); display: block; letter-spacing: .02em; }
+.rail-brand small { font: 700 .6rem/1 var(--f-mono); letter-spacing: .3em; color: var(--muted-ink); }
+.tabs { display: grid; gap: 4px; }
+.tabs button { all: unset; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 12px; border-radius: 10px; font-weight: 700; color: var(--paper); }
+.tabs button:hover { background: var(--ink-2); }
+.tabs button[aria-selected="true"] { background: var(--sun); color: var(--ink); }
+.tabs button:focus-visible { outline: 2px solid var(--sun); }
+.tab-count { font: 700 .72rem/1 var(--f-mono); background: var(--ink-2); color: var(--sun); padding: 4px 7px; border-radius: 99px; }
+.tabs button[aria-selected="true"] .tab-count { background: var(--ink); }
+.rail-foot { margin-top: auto; font-size: .8rem; color: var(--muted-ink); padding: 0 6px; }
+.rail-foot a { color: var(--sun); }
+
+.main { padding-block: 26px 60px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); min-width: 0; }
+.main-in { max-width: 1040px; margin: 0 auto; }
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; }
+  .rail { position: sticky; height: auto; flex-direction: row; align-items: center; gap: 12px; padding: 10px 16px; z-index: 40; overflow-x: auto; }
+  .rail-brand div, .rail-foot { display: none; }
+  .tabs { display: flex; gap: 4px; }
+  .tabs button { padding: 9px 11px; white-space: nowrap; }
+}
+
+.demo-note { display: flex; gap: 12px; align-items: flex-start; background: var(--sun-soft); border: 2px solid var(--ink); border-radius: 12px; padding: 12px 14px; margin-bottom: 22px; font-size: .9rem; }
+.demo-note b { white-space: nowrap; }
+.page-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+h1 { font: 400 clamp(2rem, 5vw, 3rem)/1 var(--f-display); text-transform: uppercase; margin: 0; letter-spacing: .01em; }
+h2 { font: 800 1.1rem/1.2 var(--f-body); margin: 0 0 12px; }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 62ch; }
+
+.card { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 18px; min-width: 0; }
+.grid { display: grid; gap: 14px; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+@media (max-width: 760px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.stat { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 14px 16px; }
+.stat-n { font: 400 2.4rem/1 var(--f-display); }
+.stat-l { font: 700 .7rem/1.3 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-top: 6px; }
+.stat-hero { background: var(--ink); color: var(--sun); }
+.stat-hero .stat-l { color: var(--muted-ink); }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+@media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; font: 800 .9rem/1 var(--f-body); padding: 11px 15px; border-radius: 999px; border: 2px solid var(--ink); cursor: pointer; background: var(--card); color: var(--ink); text-decoration: none; }
+.btn:hover { background: var(--sun-soft); }
+.btn-ink { background: var(--ink); color: var(--sun); }
+.btn-ink:hover { background: var(--ink-2); }
+.btn-sm { padding: 7px 11px; font-size: .8rem; }
+.btn-bad { border-color: var(--bad); color: var(--bad); }
+.btn-bad:hover { background: var(--bad-soft); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+label.f { display: grid; gap: 5px; font-weight: 700; font-size: .85rem; min-width: 0; }
+input[type=text], input[type=tel], input[type=url], input[type=number], input[type=date], select, textarea {
+  width: 100%; font: 500 .95rem/1.4 var(--f-body); color: var(--ink); background: var(--paper);
+  border: 2px solid var(--ink); border-radius: 9px; padding: 9px 11px;
+}
+textarea { resize: vertical; font-family: var(--f-mono); font-size: .82rem; }
+input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 3px var(--sun); }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.full { grid-column: 1 / -1; }
+
+.switch { position: relative; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 700; }
+.switch input { position: absolute; opacity: 0; }
+.switch i { width: 46px; height: 26px; border-radius: 99px; background: var(--line); border: 2px solid var(--ink); position: relative; transition: background .15s; flex: none; }
+.switch i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--ink); transition: transform .15s; }
+.switch input:checked + i { background: var(--sun); }
+.switch input:checked + i::after { transform: translateX(20px); }
+.switch input:focus-visible + i { outline: 3px solid var(--ink); outline-offset: 2px; }
+.switch input:disabled + i { opacity: .4; }
+
+.pill { display: inline-block; font: 700 .7rem/1 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; padding: 5px 8px; border-radius: 99px; border: 1.5px solid currentColor; white-space: nowrap; }
+.p-new { color: var(--ink); background: var(--sun); border-color: var(--ink); }
+.p-picked, .p-way { color: var(--warn); background: var(--warn-soft); }
+.p-done, .p-live, .p-active { color: var(--ok); background: var(--ok-soft); }
+.p-cancel, .p-removed, .p-off { color: var(--bad); background: var(--bad-soft); }
+.p-testing { color: var(--muted); background: var(--paper); }
+.p-example { color: var(--muted); border-style: dashed; }
+
+.list { display: grid; gap: 10px; }
+.item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; background: var(--card); border: 2px solid var(--ink); border-radius: 12px; padding: 14px; }
+.item-title { font-weight: 800; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.item-meta { color: var(--muted); font-size: .85rem; margin-top: 4px; overflow-wrap: anywhere; }
+.item-side { display: grid; gap: 6px; justify-items: end; }
+.item-side select { width: auto; padding: 6px 8px; font-size: .82rem; }
+@media (max-width: 560px) { .item { grid-template-columns: 1fr; } .item-side { justify-items: start; } }
+.empty { border: 2px dashed var(--muted); border-radius: 12px; padding: 22px; color: var(--muted); text-align: center; }
+
+.charge { display: grid; grid-template-columns: minmax(0, 1fr) 170px auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1.5px dashed var(--line); }
+.charge:last-child { border-bottom: 0; }
+.charge small { display: block; color: var(--muted); font-weight: 400; }
+@media (max-width: 560px) { .charge { grid-template-columns: 1fr auto; } .charge .amt { grid-column: 1 / -1; grid-row: 2; } }
+.amt { display: flex; align-items: center; gap: 6px; }
+.amt input { width: 92px; flex: none; }
+.amt span { font: 700 .75rem/1 var(--f-mono); color: var(--muted); white-space: nowrap; }
+.comrade { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; background: var(--ink); color: var(--paper); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+.comrade b { color: var(--sun); font: 400 1.6rem/1 var(--f-display); text-transform: uppercase; display: block; margin-bottom: 4px; }
+.comrade p { margin: 0; color: var(--muted-ink); max-width: 52ch; }
+.comrade .switch i { border-color: var(--sun); }
+.quote { background: var(--sun-soft); border-radius: 10px; padding: 12px; font-size: .9rem; }
+.quote table { width: 100%; border-collapse: collapse; }
+.quote td { padding: 4px 0; }
+.quote td:last-child { text-align: right; font-family: var(--f-mono); }
+.quote tr.total td { border-top: 2px solid var(--ink); font-weight: 800; padding-top: 8px; }
+
+.checks { display: grid; gap: 8px; }
+.checks label { display: flex; gap: 10px; align-items: flex-start; font-weight: 600; font-size: .9rem; cursor: pointer; }
+.checks input { width: 18px; height: 18px; accent-color: var(--ink); margin-top: 2px; flex: none; }
+.checks small { color: var(--muted); font-weight: 400; display: block; }
+.testbar { display: flex; gap: 3px; }
+.testbar i { width: 14px; height: 6px; border-radius: 3px; background: var(--line); }
+.testbar i.on { background: var(--ok); }
+.inline-confirm { display: flex; gap: 6px; align-items: center; font-size: .8rem; font-weight: 700; color: var(--bad); }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--sun); padding: 11px 18px; border-radius: 99px; font-weight: 800; z-index: 90; box-shadow: 3px 3px 0 var(--sun); }
+pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; padding: 12px; max-height: 260px; overflow: auto; font-size: .78rem; white-space: pre-wrap; word-break: break-word; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-brand">
+      <img src="../assets/logo.svg" alt="" width="38" height="38">
+      <div><b>SOSCIK</b><small>ADMIN</small></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Admin sections" id="tabs">
+      <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
+      <button role="tab" data-tab="orders" aria-selected="false">Orders <span class="tab-count" id="cOrders">0</span></button>
+      <button role="tab" data-tab="team" aria-selected="false">Team <span class="tab-count" id="cTeam">0</span></button>
+      <button role="tab" data-tab="charges" aria-selected="false">Charges</button>
+      <button role="tab" data-tab="plugs" aria-selected="false">Verified Plugs <span class="tab-count" id="cPlugs">0</span></button>
+      <button role="tab" data-tab="settings" aria-selected="false">Backup</button>
+    </nav>
+    <div class="rail-foot">Signed in as <b>VosteyArts</b><br><a href="../">← View the website</a></div>
+  </aside>
+
+  <main class="main"><div class="main-in">
+    <div class="demo-note" role="note"><b>Early version.</b><span>Everything you change here is saved on <u>this device only</u>. Shared online saving and a proper login come in the next step. Rows marked <span class="pill p-example">example</span> are samples, so clear them whenever you like.</span></div>
+
+    <!-- OVERVIEW -->
+    <section data-panel="overview">
+      <div class="page-head"><div><h1>Hey VosteyArts 👋</h1><p class="sub" id="ovSub"></p></div></div>
+      <div class="stats" id="ovStats"></div>
+      <div class="two">
+        <div class="card"><h2>Orders needing action</h2><div class="list" id="ovOrders"></div></div>
+        <div class="card"><h2>Riders on duty</h2><div class="list" id="ovTeam"></div></div>
+      </div>
+    </section>
+
+    <!-- ORDERS -->
+    <section data-panel="orders" hidden>
+      <div class="page-head"><div><h1>Orders</h1><p class="sub">Orders arrive on your WhatsApp as a Soscik slip. Paste the slip here to log it, assign a rider and track it to delivery.</p></div></div>
+      <div class="card" style="margin-bottom:14px">
+        <h2>Log an order from WhatsApp</h2>
+        <form id="orderForm" class="grid">
+          <label class="f">Paste the WhatsApp order slip
+            <textarea id="oPaste" rows="5" placeholder="🟡 SOSCIK ORDER SOS-1234&#10;Item: …&#10;Deliver to: …"></textarea>
+          </label>
+          <div class="row"><button class="btn btn-ink" type="submit">Add order</button><span class="item-meta" id="oMsg"></span></div>
+        </form>
+      </div>
+      <div class="row" style="margin-bottom:12px" id="orderFilter">
+        <button class="btn btn-sm btn-ink" data-f="open">Open</button>
+        <button class="btn btn-sm" data-f="done">Delivered</button>
+        <button class="btn btn-sm" data-f="all">All</button>
+      </div>
+      <div class="list" id="orderList"></div>
+    </section>
+
+    <!-- TEAM -->
+    <section data-panel="team" hidden>
+      <div class="page-head"><div><h1>Team</h1><p class="sub">Everyone you've brought on: riders, plug testers, support. Switch someone off duty and they stop showing up for new orders.</p></div></div>
+      <div class="card" style="margin-bottom:14px">
+        <h2>Add someone</h2>
+        <form id="teamForm" class="form-grid">
+          <label class="f">Name<input id="tName" type="text" required></label>
+          <label class="f">Phone<input id="tPhone" type="tel" placeholder="07XX XXX XXX" required></label>
+          <label class="f">Role
+            <select id="tRole"><option>Rider</option><option>Plug tester</option><option>Customer care</option><option>Social media</option><option>Other</option></select>
+          </label>
+          <label class="f">Base area<input id="tArea" type="text" placeholder="e.g. Westlands"></label>
+          <div class="full row"><button class="btn btn-ink" type="submit">Add to team</button><span class="item-meta" id="tMsg"></span></div>
+        </form>
+      </div>
+      <div class="list" id="teamList"></div>
+    </section>
+
+    <!-- CHARGES -->
+    <section data-panel="charges" hidden>
+      <div class="page-head"><div><h1>Charges</h1><p class="sub">Delivery is charged on every order. The extras are ready and waiting. Switch each one on whenever you feel the time is right.</p></div></div>
+      <div class="comrade">
+        <div><b id="chargeHead">Delivery fee only</b><p id="comradeText"></p></div>
+      </div>
+      <div class="two">
+        <div class="card"><h2>Charged now</h2><div id="chargeList"></div><h2 style="margin-top:18px">Delivery extras · turn on later</h2><div id="extraList"></div></div>
+        <div class="card">
+          <h2>What a customer would pay</h2>
+          <div class="form-grid" style="margin-bottom:12px">
+            <label class="f">Item price (KES)<input id="qItem" type="number" min="0" value="1500"></label>
+            <label class="f">Distance (km)<input id="qKm" type="number" min="0" step="0.5" value="6"></label>
+            <label class="f">Order type<select id="qRush"><option value="0">Normal</option><option value="1">ASAP / rush</option></select></label>
+            <label class="f">Time<select id="qNight"><option value="0">Daytime</option><option value="1">After 9pm</option></select></label>
+          </div>
+          <div class="quote" id="quote"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h2>Plug spot charges · sellers pay, turn on when plug spots open</h2>
+        <p class="item-meta" style="margin:0 0 4px">Customers never pay these. Switch them on once Verified Plugs are live and sellers start asking for spots.</p>
+        <div id="plugChargeList"></div>
+      </div>
+    </section>
+
+    <!-- PLUGS -->
+    <section data-panel="plugs" hidden>
+      <div class="page-head"><div><h1>Verified Plugs</h1><p class="sub">Add sellers you're testing. A plug can only go <b>Live</b> after all five Soscik Test checks are ticked.</p></div>
+        <button class="btn btn-ink" type="button" id="exportPlugs">Copy live plugs for website</button></div>
+      <div class="card" style="margin-bottom:14px">
+        <h2 id="plugFormTitle">Add a seller to test</h2>
+        <form id="plugForm" class="form-grid">
+          <label class="f">Shop name<input id="pName" type="text" required></label>
+          <label class="f">Category<select id="pCat"></select></label>
+          <label class="f">Area<input id="pArea" type="text" placeholder="e.g. Gikomba, Online"></label>
+          <label class="f">Page link (IG, TikTok, site)<input id="pLink" type="url" placeholder="https://"></label>
+          <label class="f full">What they sell<input id="pSells" type="text" placeholder="e.g. Grade-1 baggy jeans, sizes 28 to 40"></label>
+          <div class="full checks" id="pChecks"></div>
+          <label class="f">Badge level<select id="pLevel"><option value="verified">✓ Verified</option><option value="trusted">★ Trusted</option><option value="top">♛ Top Plug</option></select></label>
+          <label class="f">Date tested<input id="pTested" type="date"></label>
+          <div class="full row"><button class="btn btn-ink" type="submit" id="pSave">Save seller</button><button class="btn" type="button" id="pCancel" hidden>Cancel edit</button></div>
+        </form>
+      </div>
+      <div class="list" id="plugList"></div>
+      <pre class="out" id="plugOut" hidden></pre>
+    </section>
+
+    <!-- BACKUP -->
+    <section data-panel="settings" hidden>
+      <div class="page-head"><div><h1>Backup</h1><p class="sub">Your data lives on this device for now. Copy a backup before you clear your browser or switch phones.</p></div></div>
+      <div class="two">
+        <div class="card grid">
+          <h2>Copy a backup</h2>
+          <p class="item-meta">Copies everything (orders, team, charges, plugs). Paste it into a WhatsApp note to yourself.</p>
+          <div class="row"><button class="btn btn-ink" type="button" id="backupCopy">Copy backup</button></div>
+          <pre class="out" id="backupOut" hidden></pre>
+        </div>
+        <div class="card grid">
+          <h2>Restore from a backup</h2>
+          <textarea id="restoreText" rows="5" placeholder="Paste a backup here"></textarea>
+          <div class="row"><button class="btn" type="button" id="restoreBtn">Restore</button><span class="item-meta" id="restoreMsg"></span></div>
+        </div>
+        <div class="card grid">
+          <h2>Clear examples</h2>
+          <p class="item-meta">Removes the sample orders and team members, and keeps everything you added.</p>
+          <div class="row"><button class="btn btn-bad" type="button" id="clearExamples">Remove examples</button></div>
+        </div>
+      </div>
+    </section>
+  </div></main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  var KEY = "soscik.admin.v1";
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function kes(n) { return "KES " + Math.round(n).toLocaleString("en-KE"); }
+  function today() { return new Date().toISOString().slice(0, 10); }
+
+  var CATEGORIES = [
+    ["denim", "Denim & Jeans"], ["kicks", "Sneakers & Shoes"], ["tops", "Tees, Shirts & Hoodies"], ["dresses", "Dresses & Skirts"],
+    ["bags", "Bags & Accessories"], ["phones", "Phones & Gadgets"], ["beauty", "Beauty & Grooming"], ["home", "Home & Hostel"]
+  ];
+  var TEST = [
+    ["mystery", "Mystery buy", "We ordered from them as a normal customer"],
+    ["photo", "Photo = product", "What arrived matched what they posted"],
+    ["price", "Honest price", "No hidden charges, no price change after payment"],
+    ["time", "On time", "Delivered or handed over when promised"],
+    ["issues", "Sorts issues", "Fixed a problem or handled a return properly"]
+  ];
+  // Charges sellers pay once plug spots open. Customers never see these.
+  var PLUG_CHARGES = [
+    { id: "featured", label: "Featured plug spot", hint: "Shows first in its category (per week)", unit: "KES/wk", amount: 300, on: false, seller: true },
+    { id: "spotlight", label: "Homepage spotlight", hint: "Big card at the top of Verified Plugs (per week)", unit: "KES/wk", amount: 500, on: false, seller: true },
+    { id: "promo", label: "Soscik promo post", hint: "VosteyArts posts the plug on Soscik's socials (per post)", unit: "KES/post", amount: 400, on: false, seller: true },
+    { id: "listing", label: "Monthly plug listing", hint: "Keeps a verified plug listed. The badge itself is always earned, never sold", unit: "KES/mo", amount: 200, on: false, seller: true }
+  ];
+  var STATUS = [["new", "New"], ["picked", "Picked up"], ["way", "On the way"], ["done", "Delivered"], ["cancel", "Cancelled"]];
+
+  function defaults() {
+    var now = Date.now();
+    return {
+      charges: [
+        { id: "base", label: "Delivery fee", hint: "Charged on every delivery", unit: "KES", amount: 100, on: true, always: true },
+        { id: "km", label: "Per km after the first 3 km", hint: "For longer trips", unit: "KES/km", amount: 20, on: false },
+        { id: "service", label: "Service fee", hint: "Percent of the item price", unit: "%", amount: 5, on: false },
+        { id: "rush", label: "Rush / ASAP fee", hint: "When the customer wants it right now", unit: "KES", amount: 50, on: false },
+        { id: "night", label: "Late-night fee", hint: "Orders after 9pm", unit: "KES", amount: 80, on: false },
+      ].concat(PLUG_CHARGES.map(function (c) { return Object.assign({}, c); })),
+      team: [
+        { id: uid(), name: "Example Rider", phone: "0700000001", role: "Rider", area: "Westlands", active: true, example: true },
+        { id: uid(), name: "Example Tester", phone: "0700000002", role: "Plug tester", area: "CBD", active: true, example: true }
+      ],
+      orders: [
+        { id: uid(), code: "SOS-1042", customer: "Example customer", phone: "0700000003", item: "Black baggy jeans size 32", pickup: "Gikomba", drop: "UoN Chiromo (Hall 5)", status: "new", rider: "", created: now - 3600e3, example: true },
+        { id: uid(), code: "SOS-1038", customer: "Example customer", phone: "0700000004", item: "Parcel from Easy Coach", pickup: "Easy Coach, CBD", drop: "Kilimani", status: "way", rider: "", created: now - 7200e3, example: true }
+      ],
+      plugs: []
+    };
+  }
+
+  var db;
+  try { db = JSON.parse(localStorage.getItem(KEY)) || defaults(); } catch (e) { db = defaults(); }
+  // Older saves had a "Comrade Mode" switch; delivery is now always charged.
+  // Older saves: add any charge they're missing and refresh plug-charge labels.
+  defaults().charges.forEach(function (dc) {
+    var have = db.charges.filter(function (c) { return c.id === dc.id; })[0];
+    if (!have) db.charges.push(dc);
+    else if (dc.seller) { have.seller = true; have.label = dc.label; have.hint = dc.hint; }
+  });
+  if ("comradeMode" in db) {
+    delete db.comradeMode;
+    db.charges.forEach(function (c) { if (c.id === "base") { c.label = "Delivery fee"; c.hint = "Charged on every delivery"; c.on = true; c.always = true; } });
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { toast("Couldn't save on this device"); } render(); }
+
+  var toastTimer;
+  function toast(msg) { var t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2200); }
+
+  function copy(text, pre, okMsg) {
+    pre.textContent = text; pre.hidden = false;
+    var sel = function () { var r = document.createRange(); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected. Press copy"); };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, sel); else sel();
+  }
+
+  /* ---------- tabs ---------- */
+  function showTab(name) {
+    document.querySelectorAll("[data-tab]").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.tab === name)); });
+    document.querySelectorAll("[data-panel]").forEach(function (p) { p.hidden = p.dataset.panel !== name; });
+    try { sessionStorage.setItem("soscik.tab", name); } catch (e) {}
+  }
+  $("tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (b) showTab(b.dataset.tab); });
+
+  /* ---------- helpers ---------- */
+  function exampleTag(x) { return x.example ? ' <span class="pill p-example">example</span>' : ""; }
+  function statusLabel(s) { var f = STATUS.filter(function (x) { return x[0] === s; })[0]; return f ? f[1] : s; }
+  function riders() { return db.team.filter(function (m) { return m.active && m.role === "Rider"; }); }
+  function memberName(id) { var m = db.team.filter(function (x) { return x.id === id; })[0]; return m ? m.name : ""; }
+  function ago(ts) {
+    var m = Math.round((Date.now() - ts) / 60000);
+    if (m < 1) return "just now"; if (m < 60) return m + " min ago";
+    var h = Math.round(m / 60); if (h < 24) return h + " h ago";
+    return new Date(ts).toLocaleDateString("en-KE", { day: "numeric", month: "short" });
+  }
+  var pendingRemove = null;
+  function removeControl(kind, id) {
+    if (pendingRemove === kind + id) {
+      return '<span class="inline-confirm">Remove?<button class="btn btn-sm btn-bad" data-act="rm-yes" data-kind="' + kind + '" data-id="' + id + '">Yes</button><button class="btn btn-sm" data-act="rm-no">No</button></span>';
+    }
+    return '<button class="btn btn-sm" data-act="rm" data-kind="' + kind + '" data-id="' + id + '">Remove</button>';
+  }
+
+  /* ---------- overview ---------- */
+  function renderOverview() {
+    var open = db.orders.filter(function (o) { return o.status !== "done" && o.status !== "cancel"; });
+    var dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
+    var todays = db.orders.filter(function (o) { return o.created >= dayStart.getTime(); });
+    var live = db.plugs.filter(function (p) { return p.status === "live"; });
+    var activeTeam = db.team.filter(function (m) { return m.active; });
+    var extrasOn = db.charges.filter(function (c) { return !c.always && !c.seller && c.on; }).length;
+    $("ovSub").textContent = "Customers pay the item plus the delivery fee (" + kes(charge("base").amount) + ")" + (extrasOn ? ", plus " + extrasOn + " extra charge" + (extrasOn > 1 ? "s" : "") + " you've switched on." : ". No extras are on yet.");
+    $("ovStats").innerHTML = [
+      ["stat-hero", open.length, "Open orders"], ["", todays.length, "Orders today"],
+      ["", activeTeam.length, "Team on duty"], ["", live.length, "Live plugs"]
+    ].map(function (s) { return '<div class="stat ' + s[0] + '"><div class="stat-n num">' + s[1] + '</div><div class="stat-l">' + s[2] + "</div></div>"; }).join("");
+    $("ovOrders").innerHTML = open.length ? open.slice(0, 5).map(function (o) {
+      return '<div class="item"><div><div class="item-title"><span class="mono">' + esc(o.code) + "</span>" + exampleTag(o) + '</div><div class="item-meta">' + esc(o.item) + " → " + esc(o.drop) + "</div></div>" +
+        '<div class="item-side"><span class="pill p-' + o.status + '">' + statusLabel(o.status) + "</span></div></div>";
+    }).join("") : '<div class="empty">No open orders. New ones arrive on your WhatsApp.</div>';
+    var r = riders();
+    $("ovTeam").innerHTML = r.length ? r.map(function (m) {
+      var load = open.filter(function (o) { return o.rider === m.id; }).length;
+      return '<div class="item"><div><div class="item-title">' + esc(m.name) + exampleTag(m) + '</div><div class="item-meta">' + esc(m.area || "Any area") + " · " + esc(m.phone) + "</div></div>" +
+        '<div class="item-side"><span class="pill ' + (load ? "p-way" : "p-active") + '">' + (load ? load + " order" + (load > 1 ? "s" : "") : "Free") + "</span></div></div>";
+    }).join("") : '<div class="empty">No riders on duty. Add riders in the Team tab.</div>';
+  }
+
+  /* ---------- orders ---------- */
+  var orderFilter = "open";
+  function parseSlip(text) {
+    var get = function (label) { var m = text.match(new RegExp("^\\s*" + label + ":\\s*(.+)$", "mi")); return m ? m[1].trim() : ""; };
+    var code = (text.match(/SOS-\d{4}/) || [])[0];
+    return { code: code || "SOS-" + Math.floor(1000 + Math.random() * 9000), item: get("Item"), pickup: get("Pick up from"), drop: get("Deliver to"), customer: get("Name"), phone: get("Phone"), pin: get("My location pin") };
+  }
+  $("orderForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var text = $("oPaste").value.trim();
+    if (!text) { $("oMsg").textContent = "Paste an order slip first."; return; }
+    var o = parseSlip(text);
+    if (!o.item && !o.drop) { o.item = text.slice(0, 140); }
+    if (db.orders.some(function (x) { return x.code === o.code; })) { $("oMsg").textContent = o.code + " is already logged."; return; }
+    o.id = uid(); o.status = "new"; o.rider = ""; o.created = Date.now();
+    db.orders.unshift(o);
+    $("oPaste").value = ""; $("oMsg").textContent = "";
+    save(); toast(o.code + " added");
+  });
+  $("orderFilter").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-f]"); if (!b) return;
+    orderFilter = b.dataset.f;
+    this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("btn-ink", x === b); });
+    renderOrders();
+  });
+  function renderOrders() {
+    var list = db.orders.filter(function (o) {
+      if (orderFilter === "open") return o.status !== "done" && o.status !== "cancel";
+      if (orderFilter === "done") return o.status === "done";
+      return true;
+    });
+    var r = riders();
+    $("orderList").innerHTML = list.length ? list.map(function (o) {
+      var riderOpts = '<option value="">No rider yet</option>' + r.map(function (m) { return '<option value="' + m.id + '"' + (o.rider === m.id ? " selected" : "") + ">" + esc(m.name) + "</option>"; }).join("") +
+        (o.rider && !r.some(function (m) { return m.id === o.rider; }) ? '<option value="' + esc(o.rider) + '" selected>' + esc(memberName(o.rider) || "Former rider") + "</option>" : "");
+      var statusOpts = STATUS.map(function (s) { return '<option value="' + s[0] + '"' + (o.status === s[0] ? " selected" : "") + ">" + s[1] + "</option>"; }).join("");
+      return '<div class="item"><div>' +
+        '<div class="item-title"><span class="mono">' + esc(o.code) + '</span><span class="pill p-' + o.status + '">' + statusLabel(o.status) + "</span>" + exampleTag(o) + "</div>" +
+        '<div class="item-meta"><b>' + esc(o.item || "Item not stated") + "</b></div>" +
+        '<div class="item-meta">From ' + esc(o.pickup || "(we find it)") + " → " + esc(o.drop || "?") + "</div>" +
+        '<div class="item-meta">' + esc(o.customer || "Customer") + (o.phone ? " · " + esc(o.phone) : "") + " · " + ago(o.created) +
+        (o.pin ? ' · <a href="' + esc(o.pin) + '" target="_blank" rel="noopener">Map pin</a>' : "") + "</div></div>" +
+        '<div class="item-side"><select data-act="status" data-id="' + o.id + '" aria-label="Status for ' + esc(o.code) + '">' + statusOpts + "</select>" +
+        '<select data-act="rider" data-id="' + o.id + '" aria-label="Rider for ' + esc(o.code) + '">' + riderOpts + "</select>" +
+        removeControl("order", o.id) + "</div></div>";
+    }).join("") : '<div class="empty">' + (orderFilter === "open" ? "No open orders." : "Nothing here yet.") + "</div>";
+  }
+
+  /* ---------- team ---------- */
+  $("teamForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("tName").value.trim(), phone = $("tPhone").value.replace(/\s/g, "");
+    if (!name) { $("tMsg").textContent = "Add a name."; return; }
+    if (!/^(\+?254|0)[17]\d{8}$/.test(phone)) { $("tMsg").textContent = "Phone should look like 07XX XXX XXX."; return; }
+    db.team.push({ id: uid(), name: name, phone: phone, role: $("tRole").value, area: $("tArea").value.trim(), active: true, joined: today() });
+    this.reset(); $("tMsg").textContent = "";
+    save(); toast(name + " added to the team");
+  });
+  function renderTeam() {
+    $("teamList").innerHTML = db.team.length ? db.team.map(function (m) {
+      return '<div class="item"><div><div class="item-title">' + esc(m.name) + ' <span class="pill ' + (m.active ? "p-active" : "p-off") + '">' + (m.active ? "On duty" : "Off duty") + "</span>" + exampleTag(m) + "</div>" +
+        '<div class="item-meta">' + esc(m.role) + " · " + esc(m.area || "Any area") + ' · <a href="https://wa.me/' + esc(m.phone.replace(/^0/, "254").replace(/^\+/, "")) + '" target="_blank" rel="noopener">' + esc(m.phone) + "</a></div></div>" +
+        '<div class="item-side"><label class="switch"><input type="checkbox" data-act="duty" data-id="' + m.id + '"' + (m.active ? " checked" : "") + '><i></i><span class="sr-only">On duty</span></label>' +
+        removeControl("team", m.id) + "</div></div>";
+    }).join("") : '<div class="empty">No one on the team yet. Add your first rider above.</div>';
+  }
+
+  /* ---------- charges ---------- */
+  function chargeRow(c) {
+    var toggle = c.always
+      ? '<span class="pill p-live">Always on</span>'
+      : '<label class="switch"><input type="checkbox" data-act="charge" data-id="' + c.id + '"' + (c.on ? " checked" : "") + '><i></i><span class="sr-only">Charge ' + esc(c.label) + "</span></label>";
+    return '<div class="charge"><div><b>' + esc(c.label) + "</b><small>" + esc(c.hint) + "</small></div>" +
+      '<div class="amt"><input type="number" min="0" value="' + c.amount + '" data-act="amount" data-id="' + c.id + '" aria-label="' + esc(c.label) + ' amount"><span>' + esc(c.unit) + "</span></div>" + toggle + "</div>";
+  }
+  function renderCharges() {
+    var extras = db.charges.filter(function (c) { return !c.always && !c.seller; });
+    var on = extras.filter(function (c) { return c.on; });
+    $("chargeHead").textContent = on.length ? "Delivery + " + on.length + " extra" + (on.length > 1 ? "s" : "") : "Delivery fee only";
+    $("comradeText").textContent = on.length
+      ? "Customers now pay delivery plus: " + on.map(function (c) { return c.label.toLowerCase(); }).join(", ") + ". Tell Sheldon so the website stops saying \"no extra charges\"."
+      : "Customers pay the item plus " + kes(charge("base").amount) + " delivery. All extras are off.";
+    $("chargeList").innerHTML = db.charges.filter(function (c) { return c.always; }).map(chargeRow).join("");
+    $("extraList").innerHTML = extras.map(chargeRow).join("");
+    $("plugChargeList").innerHTML = db.charges.filter(function (c) { return c.seller; }).map(chargeRow).join("");
+    renderQuote();
+  }
+  function charge(id) { return db.charges.filter(function (c) { return c.id === id; })[0]; }
+  function renderQuote() {
+    var item = +$("qItem").value || 0, km = +$("qKm").value || 0;
+    var lines = [["Item", item]];
+    var add = function (id, label, amount) { var c = charge(id); if (c && c.on && amount > 0) lines.push([label, amount]); };
+    add("base", "Delivery fee", charge("base").amount);
+    add("km", "Distance (" + Math.max(0, km - 3) + " km × " + charge("km").amount + ")", Math.max(0, km - 3) * charge("km").amount);
+    add("service", "Service fee (" + charge("service").amount + "%)", item * charge("service").amount / 100);
+    if ($("qRush").value === "1") add("rush", "Rush fee", charge("rush").amount);
+    if ($("qNight").value === "1") add("night", "Late-night fee", charge("night").amount);
+    var total = lines.reduce(function (s, l) { return s + l[1]; }, 0);
+    $("quote").innerHTML = "<table>" + lines.map(function (l) { return "<tr><td>" + esc(l[0]) + '</td><td class="num">' + kes(l[1]) + "</td></tr>"; }).join("") +
+      '<tr class="total"><td>Customer pays</td><td class="num">' + kes(total) + "</td></tr></table>" +
+      '<p class="item-meta" style="margin:8px 0 0">Soscik earns <b>' + kes(total - item) + "</b> on this order.</p>";
+  }
+  ["qItem", "qKm", "qRush", "qNight"].forEach(function (id) { $(id).addEventListener("input", renderQuote); });
+
+  /* ---------- plugs ---------- */
+  $("pCat").innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + "</option>"; }).join("");
+  $("pChecks").innerHTML = "<b>Soscik Test</b>" + TEST.map(function (t) {
+    return '<label><input type="checkbox" data-check="' + t[0] + '"><span>' + t[1] + "<small>" + t[2] + "</small></span></label>";
+  }).join("");
+  $("pTested").value = today();
+  var editingPlug = null;
+  function checksFromForm() { var c = {}; document.querySelectorAll("[data-check]").forEach(function (x) { c[x.dataset.check] = x.checked; }); return c; }
+  function passed(p) { return TEST.every(function (t) { return p.checks && p.checks[t[0]]; }); }
+  $("plugForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("pName").value.trim(); if (!name) return;
+    var link = $("pLink").value.trim();
+    if (link && !/^https?:\/\//i.test(link)) link = "https://" + link;
+    var data = { name: name, category: $("pCat").value, area: $("pArea").value.trim(), link: link, sells: $("pSells").value.trim(), checks: checksFromForm(), level: $("pLevel").value, tested: $("pTested").value };
+    if (editingPlug) {
+      var p = db.plugs.filter(function (x) { return x.id === editingPlug; })[0];
+      Object.assign(p, data);
+      if (!passed(p) && p.status === "live") p.status = "testing";
+    } else {
+      data.id = uid(); data.status = "testing"; db.plugs.unshift(data);
+    }
+    resetPlugForm(); save(); toast(name + " saved");
+  });
+  function resetPlugForm() {
+    editingPlug = null; $("plugForm").reset(); $("pTested").value = today();
+    $("plugFormTitle").textContent = "Add a seller to test"; $("pCancel").hidden = true;
+  }
+  $("pCancel").addEventListener("click", resetPlugForm);
+  function renderPlugs() {
+    $("plugList").innerHTML = db.plugs.length ? db.plugs.map(function (p) {
+      var ok = passed(p);
+      var bar = '<span class="testbar" title="Soscik Test">' + TEST.map(function (t) { return '<i class="' + (p.checks && p.checks[t[0]] ? "on" : "") + '"></i>'; }).join("") + "</span>";
+      var stLabel = { testing: "Testing", live: "Live", removed: "Badge removed" }[p.status];
+      var action = p.status === "live"
+        ? '<button class="btn btn-sm btn-bad" data-act="unlive" data-id="' + p.id + '">Remove badge</button>'
+        : '<button class="btn btn-sm btn-ink" data-act="live" data-id="' + p.id + '"' + (ok ? "" : ' disabled title="Tick all five Soscik Test checks first"') + ">Go live</button>";
+      return '<div class="item"><div><div class="item-title">' + esc(p.name) + ' <span class="pill p-' + p.status + '">' + stLabel + "</span>" + bar + "</div>" +
+        '<div class="item-meta">' + esc((CATEGORIES.filter(function (c) { return c[0] === p.category; })[0] || [0, ""])[1]) + " · " + esc(p.area || "Area not set") + " · " + esc(p.sells || "") + "</div>" +
+        (p.link ? '<div class="item-meta"><a href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.link) + "</a></div>" : "") +
+        '</div><div class="item-side">' + action + '<button class="btn btn-sm" data-act="edit" data-id="' + p.id + '">Edit</button>' + removeControl("plug", p.id) + "</div></div>";
+    }).join("") : '<div class="empty">No sellers yet. Add the first one you\'re testing above.</div>';
+  }
+  $("exportPlugs").addEventListener("click", function () {
+    var live = db.plugs.filter(function (p) { return p.status === "live"; }).map(function (p) {
+      return { name: p.name, category: p.category, area: p.area, sells: p.sells, link: p.link, tested: p.tested, level: p.level };
+    });
+    if (!live.length) { toast("No live plugs yet"); return; }
+    copy("plugs: " + JSON.stringify(live, null, 2), $("plugOut"), live.length + " plug" + (live.length > 1 ? "s" : "") + " copied. Send to Sheldon");
+  });
+
+  /* ---------- backup ---------- */
+  $("backupCopy").addEventListener("click", function () { copy(JSON.stringify(db), $("backupOut"), "Backup copied"); });
+  $("restoreBtn").addEventListener("click", function () {
+    try {
+      var d = JSON.parse($("restoreText").value);
+      if (!d || !Array.isArray(d.orders) || !Array.isArray(d.team) || !Array.isArray(d.charges)) throw 0;
+      db = d; $("restoreText").value = ""; $("restoreMsg").textContent = ""; save(); toast("Backup restored");
+    } catch (e) { $("restoreMsg").textContent = "That doesn't look like a Soscik backup."; }
+  });
+  $("clearExamples").addEventListener("click", function () {
+    db.orders = db.orders.filter(function (o) { return !o.example; });
+    db.team = db.team.filter(function (m) { return !m.example; });
+    save(); toast("Examples removed");
+  });
+
+  /* ---------- shared clicks / changes ---------- */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act]"); if (!b || b.tagName === "SELECT" || b.type === "checkbox" || b.type === "number") return;
+    var id = b.dataset.id, act = b.dataset.act;
+    if (act === "rm") { pendingRemove = b.dataset.kind + id; render(); return; }
+    if (act === "rm-no") { pendingRemove = null; render(); return; }
+    if (act === "rm-yes") {
+      var k = { order: "orders", team: "team", plug: "plugs" }[b.dataset.kind];
+      db[k] = db[k].filter(function (x) { return x.id !== id; });
+      pendingRemove = null; save(); toast("Removed"); return;
+    }
+    var p = db.plugs.filter(function (x) { return x.id === id; })[0];
+    if (act === "live" && p && passed(p)) { p.status = "live"; save(); toast(p.name + " is live. Copy plugs for the website"); }
+    if (act === "unlive" && p) { p.status = "removed"; save(); toast("Badge removed from " + p.name); }
+    if (act === "edit" && p) {
+      editingPlug = id;
+      $("pName").value = p.name; $("pCat").value = p.category; $("pArea").value = p.area || ""; $("pLink").value = p.link || "";
+      $("pSells").value = p.sells || ""; $("pLevel").value = p.level || "verified"; $("pTested").value = p.tested || today();
+      document.querySelectorAll("[data-check]").forEach(function (x) { x.checked = !!(p.checks && p.checks[x.dataset.check]); });
+      $("plugFormTitle").textContent = "Editing " + p.name; $("pCancel").hidden = false;
+      $("plugForm").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+  document.addEventListener("change", function (e) {
+    var el = e.target, id = el.dataset.id, act = el.dataset.act;
+    if (!act) return;
+    if (act === "status" || act === "rider") {
+      var o = db.orders.filter(function (x) { return x.id === id; })[0];
+      if (o) { o[act] = el.value; save(); toast(o.code + (act === "status" ? ": " + statusLabel(el.value) : el.value ? ": rider assigned" : ": rider cleared")); }
+    }
+    if (act === "duty") { var m = db.team.filter(function (x) { return x.id === id; })[0]; if (m) { m.active = el.checked; save(); } }
+    if (act === "charge" || act === "amount") {
+      var c = charge(id);
+      if (act === "charge") c.on = el.checked; else c.amount = Math.max(0, +el.value || 0);
+      save();
+      if (act === "charge") toast(c.label + (c.on ? " is on" : " is off"));
+    }
+  });
+
+  function render() {
+    $("cOrders").textContent = db.orders.filter(function (o) { return o.status !== "done" && o.status !== "cancel"; }).length;
+    $("cTeam").textContent = db.team.length;
+    $("cPlugs").textContent = db.plugs.filter(function (p) { return p.status === "live"; }).length;
+    renderOverview(); renderOrders(); renderTeam(); renderCharges(); renderPlugs();
+  }
+  render();
+  var startTab = "overview";
+  try { startTab = sessionStorage.getItem("soscik.tab") || "overview"; } catch (e) {}
+  showTab(startTab);
+})();
+</script>
+</body>
+</html>

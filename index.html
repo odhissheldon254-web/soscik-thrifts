@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Soscik Thrifts</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Soscik Thrifts: order anything in Nairobi and we pick it up and deliver it. Plus Verified Plugs, sellers we have tested ourselves.">
+<meta name="theme-color" content="#FFD21F">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#top" aria-label="Soscik Thrifts home">
+      <img src="assets/logo.svg" alt="" width="40" height="40">
+      <span class="brand-word">SOSCIK<small>THRIFTS</small></span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#order">Order</a>
+      <a href="#plugs">Verified Plugs</a>
+      <a href="#how">How it works</a>
+      <a href="#areas">Areas</a>
+    </nav>
+    <a class="btn btn-ink btn-sm wa-link" data-wa="Hi Soscik Thrifts 👋" href="#" target="_blank" rel="noopener">WhatsApp us</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO: the two engines side by side, equal weight -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="sticker" id="comradeSticker">Comrade launch · just delivery, no extra charges</p>
+      <h1 class="hero-title">Order it.<br>We pick it.<br><span class="hl">We drop it.</span></h1>
+      <p class="hero-sub">From any shop in Nairobi to your gate, hostel or office. Can't find a plug for what you want? Shop from sellers we've tested ourselves.</p>
+    </div>
+    <div class="wrap engines">
+      <a class="engine engine-sun" href="#order">
+        <span class="engine-tag">Engine 01</span>
+        <span class="engine-name">Pick Up &amp; Delivery</span>
+        <span class="engine-copy">Tell us what you need and where you are. A Soscik rider picks it up and brings it to you.</span>
+        <span class="engine-go">Place an order →</span>
+      </a>
+      <a class="engine engine-ink" href="#plugs">
+        <span class="engine-tag">Engine 02</span>
+        <span class="engine-name">Verified Plugs</span>
+        <span class="engine-copy">Need jeans but no plug? Every seller here has been tested by us before getting the badge.</span>
+        <span class="engine-go">Find a plug →</span>
+      </a>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <!-- ORDER -->
+  <section class="band band-paper" id="order">
+    <div class="wrap order-grid">
+      <div class="order-intro">
+        <p class="eyebrow">Pick up &amp; delivery</p>
+        <h2 class="h2">Tell us what<br>you need.</h2>
+        <p class="lede">Fill this in and it opens WhatsApp with your order already written. VosteyArts confirms, and a rider heads out.</p>
+        <ul class="ticks">
+          <li>Any shop, market stall or Verified Plug</li>
+          <li>Pay with M-Pesa or cash when it arrives</li>
+          <li>You get an order code to follow up with</li>
+        </ul>
+        <p class="note">Rather chat? <button class="linkish" type="button" data-open-sosi="order">Ask Sosi to fill it for you</button>.</p>
+      </div>
+
+      <form class="ticket" id="orderForm" novalidate>
+        <div class="ticket-head">
+          <span>SOSCIK ORDER SLIP</span>
+          <span class="mono" id="orderCode">SOS-0000</span>
+        </div>
+
+        <div class="field">
+          <label for="item">What do you need?</label>
+          <textarea id="item" rows="2" placeholder="e.g. Black baggy jeans size 32, or pick my parcel from Easy Coach" required></textarea>
+        </div>
+
+        <div class="field">
+          <label for="pickup">Where do we pick it from?</label>
+          <input id="pickup" type="text" list="placesList" placeholder="Shop name, market or area. Leave blank if you want us to find it" autocomplete="off">
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="dropArea">Deliver to (area or campus)</label>
+            <input id="dropArea" type="text" list="placesList" placeholder="Start typing… e.g. Chiromo" autocomplete="off" required>
+          </div>
+          <div class="field">
+            <label for="landmark">Landmark / directions</label>
+            <input id="landmark" type="text" placeholder="e.g. Blue gate opposite Shell, Hall 5">
+          </div>
+        </div>
+        <div class="loc-row">
+          <button type="button" class="btn btn-ghost btn-sm" id="locBtn">📍 Use my location</button>
+          <span class="loc-status" id="locStatus" aria-live="polite"></span>
+        </div>
+        <datalist id="placesList"></datalist>
+
+        <div class="row2">
+          <div class="field">
+            <label for="custName">Your name</label>
+            <input id="custName" type="text" autocomplete="name" placeholder="e.g. Wanjiru" required>
+          </div>
+          <div class="field">
+            <label for="custPhone">Phone number</label>
+            <input id="custPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07XX XXX XXX" required>
+          </div>
+        </div>
+
+        <fieldset class="field">
+          <legend>When?</legend>
+          <div class="chips" role="radiogroup">
+            <label class="chip"><input type="radio" name="when" value="As soon as possible" checked><span>ASAP</span></label>
+            <label class="chip"><input type="radio" name="when" value="Later today"><span>Later today</span></label>
+            <label class="chip"><input type="radio" name="when" value="Tomorrow"><span>Tomorrow</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>Pay with</legend>
+          <div class="chips" role="radiogroup">
+            <label class="chip"><input type="radio" name="pay" value="M-Pesa on delivery" checked><span>M-Pesa on delivery</span></label>
+            <label class="chip"><input type="radio" name="pay" value="Cash on delivery"><span>Cash</span></label>
+          </div>
+        </fieldset>
+
+        <p class="form-error" id="formError" role="alert" hidden></p>
+
+        <div class="ticket-foot">
+          <p class="fee-line" id="feeLine">Delivery fee: <strong>confirmed on WhatsApp</strong> before pickup. No extra charges.</p>
+          <button class="btn btn-ink btn-lg" type="submit">Send order on WhatsApp</button>
+        </div>
+      </form>
+
+      <div class="sent" id="sentCard" hidden>
+        <p class="eyebrow">Order slip ready</p>
+        <h3 class="h3">Almost there! Hit send in WhatsApp.</h3>
+        <pre class="sent-msg mono" id="sentMsg"></pre>
+        <div class="sent-actions">
+          <a class="btn btn-ink" id="sentWa" href="#" target="_blank" rel="noopener">Open WhatsApp again</a>
+          <button class="btn btn-ghost" type="button" id="copyMsg">Copy message</button>
+          <button class="btn btn-ghost" type="button" id="newOrder">New order</button>
+        </div>
+        <p class="note">WhatsApp didn't open? Send the message above to <strong class="mono wa-number">0112 275 881</strong>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS: a real sequence, so it is numbered -->
+  <section class="band band-sun" id="how">
+    <div class="wrap">
+      <p class="eyebrow">How it works</p>
+      <h2 class="h2">Three steps. Zero stress.</h2>
+      <ol class="steps">
+        <li><span class="step-n">1</span><h3>You order</h3><p>Fill the slip or chat with Sosi. It lands on VosteyArts' WhatsApp with your order code.</p></li>
+        <li><span class="step-n">2</span><h3>We pick it</h3><p>We confirm the price with you, then a rider collects it from the shop, stall or plug.</p></li>
+        <li><span class="step-n">3</span><h3>We drop it</h3><p>Delivered to your gate, hostel or desk. You check it, then pay.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- VERIFIED PLUGS -->
+  <section class="band band-ink" id="plugs">
+    <div class="wrap">
+      <div class="plugs-head">
+        <div>
+          <p class="eyebrow eyebrow-sun">Verified Plugs</p>
+          <h2 class="h2">No plug?<br><span class="hl-ink">We've got one.</span></h2>
+        </div>
+        <p class="lede">Every seller here passed the <strong>Soscik Test</strong>. We bought from them ourselves before giving them the badge. If they slip, they lose it.</p>
+      </div>
+
+      <div class="plug-tools">
+        <label class="sr-only" for="plugSearch">Search plugs</label>
+        <input class="search" id="plugSearch" type="search" placeholder="What are you hunting? jeans, sneakers, perfume…">
+        <div class="cat-chips" id="catChips"></div>
+      </div>
+
+      <div class="plug-grid" id="plugGrid"></div>
+
+      <div class="test">
+        <h3 class="h3">The Soscik Test</h3>
+        <p class="test-sub">A seller only goes live after passing all five checks:</p>
+        <ul class="test-list">
+          <li><b>Mystery buy</b>We order from them as a normal customer.</li>
+          <li><b>Photo = product</b>What arrives matches what they posted.</li>
+          <li><b>Honest price</b>No hidden charges and no price that changes after you pay.</li>
+          <li><b>On time</b>They deliver or hand over when they said they would.</li>
+          <li><b>Sorts issues</b>They fix problems and handle returns properly.</li>
+        </ul>
+        <div class="badges">
+          <span class="badge badge-verified">✓ Verified</span><span class="badge-desc">Passed the test</span>
+          <span class="badge badge-trusted">★ Trusted</span><span class="badge-desc">3+ months, no complaints</span>
+          <span class="badge badge-top">♛ Top Plug</span><span class="badge-desc">Comrades' favourite</span>
+        </div>
+      </div>
+
+      <div class="plug-ctas">
+        <a class="btn btn-sun wa-link" data-wa="Hi VosteyArts! I sell stuff and I'd like Soscik Thrifts to test my shop for the Verified badge. My shop name:" href="#" target="_blank" rel="noopener">I'm a seller: test my shop</a>
+        <a class="btn btn-outline-sun wa-link" data-wa="Hi VosteyArts! I know a solid plug you should test. Their name / page:" href="#" target="_blank" rel="noopener">Nominate a plug</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- AREAS -->
+  <section class="band band-paper" id="areas">
+    <div class="wrap">
+      <p class="eyebrow">Where we deliver</p>
+      <h2 class="h2">Nairobi first.<br>Kenya next.</h2>
+      <p class="lede">We're launching in Nairobi and nearby towns. Not on the list? Order anyway and VosteyArts will tell you if a rider can reach you.</p>
+      <h3 class="h4">Campuses</h3>
+      <ul class="pill-list" id="campusList"></ul>
+      <h3 class="h4">Areas</h3>
+      <ul class="pill-list" id="areaList"></ul>
+      <h3 class="h4">Coming next</h3>
+      <ul class="pill-list pill-list-soon" id="nextList"></ul>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div>
+      <p class="footer-brand">SOSCIK THRIFTS</p>
+      <p>Pick up, delivery and Verified Plugs in Nairobi. Run by <strong>VosteyArts</strong>.</p>
+    </div>
+    <div>
+      <p class="footer-label">WhatsApp</p>
+      <p class="mono footer-num wa-number">0112 275 881</p>
+      <a class="btn btn-sun btn-sm wa-link" data-wa="Hi Soscik Thrifts 👋" href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
+    </div>
+  </div>
+  <div class="wrap footer-fine">© <span id="year">2026</span> Soscik Thrifts · Nairobi, Kenya</div>
+</footer>
+
+<!-- SOSI: the chat helper -->
+<button class="sosi-fab" id="sosiFab" type="button" aria-label="Chat with Sosi, the Soscik helper" aria-expanded="false" aria-controls="sosiPanel">
+  <span class="sosi-bubble" id="sosiNudge">Niaje! Need something? 👀</span>
+  <span class="sosi-face" aria-hidden="true"><i class="eye"></i><i class="eye"></i><i class="mouth"></i></span>
+</button>
+
+<section class="sosi-panel" id="sosiPanel" role="dialog" aria-label="Sosi chat" hidden>
+  <header class="sosi-top">
+    <span class="sosi-face sosi-face-sm" aria-hidden="true"><i class="eye"></i><i class="eye"></i><i class="mouth"></i></span>
+    <div class="sosi-id">
+      <strong>Sosi</strong>
+      <small id="sosiMood">Soscik's helper bot · online</small>
+    </div>
+    <button class="sosi-toggle" id="shengToggle" type="button" aria-pressed="true" title="Switch between Sheng and plain English">Sheng: ON</button>
+    <button class="sosi-x" id="sosiClose" type="button" aria-label="Close chat">×</button>
+  </header>
+  <div class="sosi-log" id="sosiLog" aria-live="polite"></div>
+  <div class="sosi-chips" id="sosiChips"></div>
+  <form class="sosi-input" id="sosiForm">
+    <label class="sr-only" for="sosiText">Message Sosi</label>
+    <input id="sosiText" type="text" autocomplete="off" placeholder="Type here… e.g. where can I get jeans?">
+    <button type="submit" aria-label="Send">➤</button>
+  </form>
+</section>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/sosi.js"></script>
+</body>
+</html>
