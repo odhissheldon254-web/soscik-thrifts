@@ -1,8 +1,8 @@
-// Soscik Thrifts: page behaviour (order slip, plugs, areas).
-// Shared helpers hang off window.Soscik so Sosi (sosi.js) can reuse them.
+// Sosick Thrifts: page behaviour (order slip, plugs, areas).
+// Shared helpers hang off window.Sosick so Sosi (sosi.js) can reuse them.
 (function () {
   "use strict";
-  var S = window.SOSCIK;
+  var S = window.SOSICK;
   var $ = function (id) { return document.getElementById(id); };
 
   function esc(s) {
@@ -43,7 +43,7 @@
 
   function buildOrderMessage(o) {
     var lines = [
-      "🟡 SOSCIK ORDER " + o.code,
+      "🟡 SOSICK ORDER " + o.code,
       "",
       "Item: " + o.item,
       "Pick up from: " + (o.pickup || "Not sure. Please find it for me"),
@@ -171,7 +171,7 @@
 
   /* ---------------- WhatsApp links ---------------- */
   document.querySelectorAll(".wa-link").forEach(function (a) {
-    a.href = waLink(a.getAttribute("data-wa") || "Hi Soscik Thrifts");
+    a.href = waLink(a.getAttribute("data-wa") || "Hi Sosick Thrifts");
   });
   document.querySelectorAll(".wa-number").forEach(function (el) { el.textContent = S.whatsappDisplay; });
 
@@ -229,7 +229,7 @@
       "<p>" + esc(p.sells) + "</p>" +
       '<div class="plug-actions">' +
         (p.link ? '<a class="btn btn-sun btn-sm" href="' + esc(p.link) + '" target="_blank" rel="noopener">Visit their page</a>' : "") +
-        '<a class="btn btn-outline-sun btn-sm" href="' + esc(waLink("Hi Soscik! Please pick up from " + p.name + " for me. I want: ")) + '" target="_blank" rel="noopener">Deliver from here</a>' +
+        '<a class="btn btn-outline-sun btn-sm" href="' + esc(waLink("Hi Sosick! Please pick up from " + p.name + " for me. I want: ")) + '" target="_blank" rel="noopener">Deliver from here</a>' +
       "</div></article>";
   }
 
@@ -241,20 +241,20 @@
     if (list.length) { grid.innerHTML = list.map(plugCard).join(""); return; }
 
     var hunting = q.trim() || (activeCat !== "all" ? catLabel(activeCat) : "");
-    var huntMsg = "Hi VosteyArts! I'm looking for a solid plug for " + (hunting || "something") + ". Can Soscik find one for me?";
+    var huntMsg = "Hi VosteyArts! I'm looking for a solid plug for " + (hunting || "something") + ". Can Sosick find one for me?";
     var title = S.plugs.length === 0 ? "First plugs drop soon" : "No verified plug for that yet";
     var body = S.plugs.length === 0
-      ? "VosteyArts is putting Nairobi sellers through the Soscik Test right now. Only the ones that pass get listed here."
+      ? "VosteyArts is putting Nairobi sellers through the Sosick Test right now. Only the ones that pass get listed here."
       : "We haven't tested a seller for " + esc(hunting) + " yet.";
     grid.innerHTML =
       '<div class="empty-plugs"><h3>' + title + "</h3><p>" + body +
       " Need it today? We'll hunt it down and deliver it.</p>" +
-      '<a class="btn btn-sun" href="' + esc(waLink(huntMsg)) + '" target="_blank" rel="noopener">Ask Soscik to find ' + (hunting ? esc(hunting) : "it") + "</a></div>" +
+      '<a class="btn btn-sun" href="' + esc(waLink(huntMsg)) + '" target="_blank" rel="noopener">Ask Sosick to find ' + (hunting ? esc(hunting) : "it") + "</a></div>" +
       '<article class="plug plug-sample"><span class="badge badge-verified">✓ Verified</span>' +
       "<h3>Your shop could be here</h3>" +
       '<div class="plug-meta">Any category · Nairobi</div>' +
-      "<p>Sell honest stuff? Let us test you. Pass the Soscik Test and comrades across Nairobi find you here.</p>" +
-      '<div class="plug-actions"><a class="btn btn-sun btn-sm" href="' + esc(waLink("Hi VosteyArts! I'd like my shop tested for the Soscik Verified badge. Shop name:")) + '" target="_blank" rel="noopener">Get tested</a></div></article>';
+      "<p>Sell honest stuff? Let us test you. Pass the Sosick Test and comrades across Nairobi find you here.</p>" +
+      '<div class="plug-actions"><a class="btn btn-sun btn-sm" href="' + esc(waLink("Hi VosteyArts! I'd like my shop tested for the Sosick Verified badge. Shop name:")) + '" target="_blank" rel="noopener">Get tested</a></div></article>';
   }
 
   var chipsHtml = '<button type="button" data-cat="all" aria-pressed="true">All</button>' +
@@ -275,7 +275,7 @@
     document.getElementById("plugs").scrollIntoView({ behavior: "smooth" });
   }
 
-  window.Soscik = {
+  window.Sosick = {
     esc: esc, waLink: waLink, normalisePhone: normalisePhone, newCode: newCode,
     findPlace: findPlace, buildOrderMessage: buildOrderMessage, fillOrderForm: fillOrderForm,
     searchPlugs: searchPlugs, catForText: catForText, showPlugSearch: showPlugSearch,

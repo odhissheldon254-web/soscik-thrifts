@@ -1,7 +1,7 @@
-// Soscik Thrifts: everything the public site reads lives here.
+// Sosick Thrifts: everything the public site reads lives here.
 // Change a value, save, refresh. No other file needs touching.
-window.SOSCIK = {
-  brand: "Soscik Thrifts",
+window.SOSICK = {
+  brand: "Sosick Thrifts",
   owner: "VosteyArts",
   whatsapp: "254112275881",        // international format for wa.me links
   whatsappDisplay: "0112 275 881", // how it shows on the page
@@ -48,7 +48,7 @@ window.SOSCIK = {
   ],
 
   // Verified Plugs. Only add a seller here after they pass all five checks
-  // of the Soscik Test. The admin portal has a "Copy for website" button
+  // of the Sosick Test. The admin portal has a "Copy for website" button
   // that produces entries in exactly this shape.
   //
   // { name, category, area, sells, link, tested: "2026-11-02", level: "verified" | "trusted" | "top" }

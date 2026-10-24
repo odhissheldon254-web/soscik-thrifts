@@ -1,4 +1,4 @@
-# Soscik Thrifts
+# Sosick Thrifts
 
 Pick up & delivery plus Verified Plugs for Nairobi. Run by **VosteyArts** (WhatsApp 0112 275 881).
 Plain HTML, CSS and JavaScript with no build step. It can be hosted free on GitHub Pages.
@@ -23,7 +23,7 @@ Plain HTML, CSS and JavaScript with no build step. It can be hosted free on GitH
 
 ## Adding a Verified Plug
 
-1. In **Admin → Verified Plugs**, add the seller and tick the five Soscik Test checks as they pass.
+1. In **Admin → Verified Plugs**, add the seller and tick the five Sosick Test checks as they pass.
 2. **Go live** only unlocks once all five are ticked.
 3. Press **Copy live plugs for website** and paste the result over `plugs: []` in `assets/data.js`.
 

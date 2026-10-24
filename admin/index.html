@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<title>Soscik Admin</title>
+<title>Sosick Admin</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -157,7 +157,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   <aside class="rail">
     <div class="rail-brand">
       <img src="../assets/logo.svg" alt="" width="38" height="38">
-      <div><b>SOSCIK</b><small>ADMIN</small></div>
+      <div><b>SOSICK</b><small>ADMIN</small></div>
     </div>
     <nav class="tabs" role="tablist" aria-label="Admin sections" id="tabs">
       <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
@@ -185,12 +185,12 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 
     <!-- ORDERS -->
     <section data-panel="orders" hidden>
-      <div class="page-head"><div><h1>Orders</h1><p class="sub">Orders arrive on your WhatsApp as a Soscik slip. Paste the slip here to log it, assign a rider and track it to delivery.</p></div></div>
+      <div class="page-head"><div><h1>Orders</h1><p class="sub">Orders arrive on your WhatsApp as a Sosick slip. Paste the slip here to log it, assign a rider and track it to delivery.</p></div></div>
       <div class="card" style="margin-bottom:14px">
         <h2>Log an order from WhatsApp</h2>
         <form id="orderForm" class="grid">
           <label class="f">Paste the WhatsApp order slip
-            <textarea id="oPaste" rows="5" placeholder="🟡 SOSCIK ORDER SOS-1234&#10;Item: …&#10;Deliver to: …"></textarea>
+            <textarea id="oPaste" rows="5" placeholder="🟡 SOSICK ORDER SOS-1234&#10;Item: …&#10;Deliver to: …"></textarea>
           </label>
           <div class="row"><button class="btn btn-ink" type="submit">Add order</button><span class="item-meta" id="oMsg"></span></div>
         </form>
@@ -249,7 +249,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 
     <!-- PLUGS -->
     <section data-panel="plugs" hidden>
-      <div class="page-head"><div><h1>Verified Plugs</h1><p class="sub">Add sellers you're testing. A plug can only go <b>Live</b> after all five Soscik Test checks are ticked.</p></div>
+      <div class="page-head"><div><h1>Verified Plugs</h1><p class="sub">Add sellers you're testing. A plug can only go <b>Live</b> after all five Sosick Test checks are ticked.</p></div>
         <button class="btn btn-ink" type="button" id="exportPlugs">Copy live plugs for website</button></div>
       <div class="card" style="margin-bottom:14px">
         <h2 id="plugFormTitle">Add a seller to test</h2>
@@ -298,7 +298,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 <script>
 (function () {
   "use strict";
-  var KEY = "soscik.admin.v1";
+  var KEY = "sosick.admin.v1";
   var $ = function (id) { return document.getElementById(id); };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
@@ -320,7 +320,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   var PLUG_CHARGES = [
     { id: "featured", label: "Featured plug spot", hint: "Shows first in its category (per week)", unit: "KES/wk", amount: 300, on: false, seller: true },
     { id: "spotlight", label: "Homepage spotlight", hint: "Big card at the top of Verified Plugs (per week)", unit: "KES/wk", amount: 500, on: false, seller: true },
-    { id: "promo", label: "Soscik promo post", hint: "VosteyArts posts the plug on Soscik's socials (per post)", unit: "KES/post", amount: 400, on: false, seller: true },
+    { id: "promo", label: "Sosick promo post", hint: "VosteyArts posts the plug on Sosick's socials (per post)", unit: "KES/post", amount: 400, on: false, seller: true },
     { id: "listing", label: "Monthly plug listing", hint: "Keeps a verified plug listed. The badge itself is always earned, never sold", unit: "KES/mo", amount: 200, on: false, seller: true }
   ];
   var STATUS = [["new", "New"], ["picked", "Picked up"], ["way", "On the way"], ["done", "Delivered"], ["cancel", "Cancelled"]];
@@ -348,7 +348,11 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   }
 
   var db;
-  try { db = JSON.parse(localStorage.getItem(KEY)) || defaults(); } catch (e) { db = defaults(); }
+  try {
+    // The brand was renamed from "Soscik"; carry over anything saved under the old name.
+    if (!localStorage.getItem(KEY) && localStorage.getItem("soscik.admin.v1")) localStorage.setItem(KEY, localStorage.getItem("soscik.admin.v1"));
+    db = JSON.parse(localStorage.getItem(KEY)) || defaults();
+  } catch (e) { db = defaults(); }
   // Older saves had a "Comrade Mode" switch; delivery is now always charged.
   // Older saves: add any charge they're missing and refresh plug-charge labels.
   defaults().charges.forEach(function (dc) {
@@ -375,7 +379,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   function showTab(name) {
     document.querySelectorAll("[data-tab]").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.tab === name)); });
     document.querySelectorAll("[data-panel]").forEach(function (p) { p.hidden = p.dataset.panel !== name; });
-    try { sessionStorage.setItem("soscik.tab", name); } catch (e) {}
+    try { sessionStorage.setItem("sosick.tab", name); } catch (e) {}
   }
   $("tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (b) showTab(b.dataset.tab); });
 
@@ -523,13 +527,13 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     var total = lines.reduce(function (s, l) { return s + l[1]; }, 0);
     $("quote").innerHTML = "<table>" + lines.map(function (l) { return "<tr><td>" + esc(l[0]) + '</td><td class="num">' + kes(l[1]) + "</td></tr>"; }).join("") +
       '<tr class="total"><td>Customer pays</td><td class="num">' + kes(total) + "</td></tr></table>" +
-      '<p class="item-meta" style="margin:8px 0 0">Soscik earns <b>' + kes(total - item) + "</b> on this order.</p>";
+      '<p class="item-meta" style="margin:8px 0 0">Sosick earns <b>' + kes(total - item) + "</b> on this order.</p>";
   }
   ["qItem", "qKm", "qRush", "qNight"].forEach(function (id) { $(id).addEventListener("input", renderQuote); });
 
   /* ---------- plugs ---------- */
   $("pCat").innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + "</option>"; }).join("");
-  $("pChecks").innerHTML = "<b>Soscik Test</b>" + TEST.map(function (t) {
+  $("pChecks").innerHTML = "<b>Sosick Test</b>" + TEST.map(function (t) {
     return '<label><input type="checkbox" data-check="' + t[0] + '"><span>' + t[1] + "<small>" + t[2] + "</small></span></label>";
   }).join("");
   $("pTested").value = today();
@@ -559,11 +563,11 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   function renderPlugs() {
     $("plugList").innerHTML = db.plugs.length ? db.plugs.map(function (p) {
       var ok = passed(p);
-      var bar = '<span class="testbar" title="Soscik Test">' + TEST.map(function (t) { return '<i class="' + (p.checks && p.checks[t[0]] ? "on" : "") + '"></i>'; }).join("") + "</span>";
+      var bar = '<span class="testbar" title="Sosick Test">' + TEST.map(function (t) { return '<i class="' + (p.checks && p.checks[t[0]] ? "on" : "") + '"></i>'; }).join("") + "</span>";
       var stLabel = { testing: "Testing", live: "Live", removed: "Badge removed" }[p.status];
       var action = p.status === "live"
         ? '<button class="btn btn-sm btn-bad" data-act="unlive" data-id="' + p.id + '">Remove badge</button>'
-        : '<button class="btn btn-sm btn-ink" data-act="live" data-id="' + p.id + '"' + (ok ? "" : ' disabled title="Tick all five Soscik Test checks first"') + ">Go live</button>";
+        : '<button class="btn btn-sm btn-ink" data-act="live" data-id="' + p.id + '"' + (ok ? "" : ' disabled title="Tick all five Sosick Test checks first"') + ">Go live</button>";
       return '<div class="item"><div><div class="item-title">' + esc(p.name) + ' <span class="pill p-' + p.status + '">' + stLabel + "</span>" + bar + "</div>" +
         '<div class="item-meta">' + esc((CATEGORIES.filter(function (c) { return c[0] === p.category; })[0] || [0, ""])[1]) + " · " + esc(p.area || "Area not set") + " · " + esc(p.sells || "") + "</div>" +
         (p.link ? '<div class="item-meta"><a href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.link) + "</a></div>" : "") +
@@ -585,7 +589,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
       var d = JSON.parse($("restoreText").value);
       if (!d || !Array.isArray(d.orders) || !Array.isArray(d.team) || !Array.isArray(d.charges)) throw 0;
       db = d; $("restoreText").value = ""; $("restoreMsg").textContent = ""; save(); toast("Backup restored");
-    } catch (e) { $("restoreMsg").textContent = "That doesn't look like a Soscik backup."; }
+    } catch (e) { $("restoreMsg").textContent = "That doesn't look like a Sosick backup."; }
   });
   $("clearExamples").addEventListener("click", function () {
     db.orders = db.orders.filter(function (o) { return !o.example; });
@@ -640,7 +644,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   }
   render();
   var startTab = "overview";
-  try { startTab = sessionStorage.getItem("soscik.tab") || "overview"; } catch (e) {}
+  try { startTab = sessionStorage.getItem("sosick.tab") || "overview"; } catch (e) {}
   showTab(startTab);
 })();
 </script>
