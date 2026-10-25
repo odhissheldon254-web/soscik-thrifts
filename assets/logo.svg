@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sosick Thrifts">
-  <!-- Placeholder mark until the real logo lands: a hanger hook over a bold S -->
-  <rect width="64" height="64" rx="14" fill="#111110"/>
-  <path d="M32 9a5 5 0 1 1 5 5c-2 0-5 1-5 4v2" fill="none" stroke="#FFD21F" stroke-width="3.5" stroke-linecap="round"/>
-  <path d="M43 27c-2-3-6-4-11-4-6 0-10 3-10 7 0 9 22 5 22 14 0 5-5 8-12 8-6 0-10-2-12-6" fill="none" stroke="#FFD21F" stroke-width="6.5" stroke-linecap="round"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Sosick"><defs><clipPath id="r"><rect width="200" height="200" rx="40"/></clipPath></defs><g clip-path="url(#r)"><rect width="200" height="200" fill="#0B0B0A"/><rect y="168" width="200" height="32" fill="#FFE600"/></g><g transform="translate(44.0,18)"><rect x="0.0" y="0.0" width="112.0" height="140.0" rx="16" fill="#FFE600"/><rect x="33.6" y="43.4" width="79.4" height="13.0" rx="2" fill="#0B0B0A"/><rect x="33.6" y="43.4" width="13.0" height="22.0" rx="2" fill="#0B0B0A"/><rect x="-1.0" y="81.2" width="79.4" height="13.0" rx="2" fill="#0B0B0A"/><rect x="65.4" y="72.2" width="13.0" height="22.0" rx="2" fill="#0B0B0A"/></g></svg>

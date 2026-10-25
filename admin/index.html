@@ -88,7 +88,7 @@ h2 { font: 800 1.1rem/1.2 var(--f-body); margin: 0 0 12px; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
 label.f { display: grid; gap: 5px; font-weight: 700; font-size: .85rem; min-width: 0; }
-input[type=text], input[type=tel], input[type=url], input[type=number], input[type=date], select, textarea {
+input[type=text], input[type=email], input[type=tel], input[type=url], input[type=number], input[type=date], select, textarea {
   width: 100%; font: 500 .95rem/1.4 var(--f-body); color: var(--ink); background: var(--paper);
   border: 2px solid var(--ink); border-radius: 9px; padding: 9px 11px;
 }
@@ -153,7 +153,36 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 </style>
 </head>
 <body>
-<div class="shell">
+<style>
+.gate { min-height: 100vh; display: grid; place-items: center; background: var(--ink); padding-block: 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.gate-card { width: min(420px, 100%); background: var(--paper); border: 3px solid var(--sun); border-radius: 18px; padding: 26px; display: grid; gap: 14px; box-shadow: 6px 6px 0 var(--sun); }
+.gate-card img { width: 52px; height: 52px; border-radius: 12px; }
+.gate-card h1 { font-size: 2.2rem; }
+.gate-card p { margin: 0; color: var(--muted); }
+.gate-msg { font-weight: 700; font-size: .9rem; }
+.gate-msg.bad { color: var(--bad); }
+.gate-msg.ok { color: var(--ok); }
+#gCode { font: 700 1.4rem/1 var(--f-mono); letter-spacing: .3em; text-align: center; }
+.rail-out { all: unset; cursor: pointer; color: var(--sun); text-decoration: underline; }
+.src-web { color: var(--ink); background: var(--sun-soft); border-color: var(--ink); }
+.sync { font: 700 .72rem/1 var(--f-mono); color: var(--muted); }
+</style>
+
+<!-- SIGN IN -->
+<div class="gate" id="gate">
+  <form class="gate-card" id="gateForm" novalidate>
+    <img src="../assets/logo-wordmark.svg" alt="Sosick" width="190" height="56" style="width:190px;height:auto;border-radius:0">
+    <h1>Admin</h1>
+    <p id="gateIntro">Sign in with your email. We'll email you a sign-in link. No password needed.</p>
+    <label class="f" id="gEmailWrap">Email<input id="gEmail" type="email" autocomplete="email" inputmode="email" required></label>
+    <label class="f" id="gCodeWrap" hidden>Code (only if the email shows one)<input id="gCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label>
+    <button class="btn btn-ink" type="submit" id="gBtn">Email me a sign-in link</button>
+    <button class="btn" type="button" id="gBack" hidden>Use a different email</button>
+    <p class="gate-msg" id="gMsg" role="alert"></p>
+  </form>
+</div>
+
+<div class="shell" id="app" hidden>
   <aside class="rail">
     <div class="rail-brand">
       <img src="../assets/logo.svg" alt="" width="38" height="38">
@@ -167,15 +196,14 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
       <button role="tab" data-tab="plugs" aria-selected="false">Verified Plugs <span class="tab-count" id="cPlugs">0</span></button>
       <button role="tab" data-tab="settings" aria-selected="false">Backup</button>
     </nav>
-    <div class="rail-foot">Signed in as <b>VosteyArts</b><br><a href="../">← View the website</a></div>
+    <div class="rail-foot">Signed in as <b id="whoami">VosteyArts</b><br><button class="rail-out" type="button" id="signOut">Sign out</button> · <a href="../">View the website</a></div>
   </aside>
 
   <main class="main"><div class="main-in">
-    <div class="demo-note" role="note"><b>Early version.</b><span>Everything you change here is saved on <u>this device only</u>. Shared online saving and a proper login come in the next step. Rows marked <span class="pill p-example">example</span> are samples, so clear them whenever you like.</span></div>
 
     <!-- OVERVIEW -->
     <section data-panel="overview">
-      <div class="page-head"><div><h1>Hey VosteyArts 👋</h1><p class="sub" id="ovSub"></p></div></div>
+      <div class="page-head"><div><h1>Hey VosteyArts 👋</h1><p class="sub" id="ovSub"></p></div><span class="sync" id="syncNote"></span></div>
       <div class="stats" id="ovStats"></div>
       <div class="two">
         <div class="card"><h2>Orders needing action</h2><div class="list" id="ovOrders"></div></div>
@@ -185,7 +213,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 
     <!-- ORDERS -->
     <section data-panel="orders" hidden>
-      <div class="page-head"><div><h1>Orders</h1><p class="sub">Orders arrive on your WhatsApp as a Sosick slip. Paste the slip here to log it, assign a rider and track it to delivery.</p></div></div>
+      <div class="page-head"><div><h1>Orders</h1><p class="sub">Orders placed on the website land here by themselves, marked <span class="pill src-web">website</span>. Orders that reach you another way can be pasted in below.</p></div><button class="btn btn-sm" type="button" id="refreshOrders">Refresh</button></div>
       <div class="card" style="margin-bottom:14px">
         <h2>Log an order from WhatsApp</h2>
         <form id="orderForm" class="grid">
@@ -223,7 +251,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 
     <!-- CHARGES -->
     <section data-panel="charges" hidden>
-      <div class="page-head"><div><h1>Charges</h1><p class="sub">Delivery is charged on every order. The extras are ready and waiting. Switch each one on whenever you feel the time is right.</p></div></div>
+      <div class="page-head"><div><h1>Charges</h1><p class="sub">Delivery is charged on every order. The extras are ready and waiting. Switch each one on whenever you feel the time is right. The website updates by itself.</p></div></div>
       <div class="comrade">
         <div><b id="chargeHead">Delivery fee only</b><p id="comradeText"></p></div>
       </div>
@@ -249,8 +277,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 
     <!-- PLUGS -->
     <section data-panel="plugs" hidden>
-      <div class="page-head"><div><h1>Verified Plugs</h1><p class="sub">Add sellers you're testing. A plug can only go <b>Live</b> after all five Sosick Test checks are ticked.</p></div>
-        <button class="btn btn-ink" type="button" id="exportPlugs">Copy live plugs for website</button></div>
+      <div class="page-head"><div><h1>Verified Plugs</h1><p class="sub">Add sellers you're testing. A plug can only go <b>Live</b> after all five Sosick Test checks are ticked. Live plugs appear on the website straight away.</p></div></div>
       <div class="card" style="margin-bottom:14px">
         <h2 id="plugFormTitle">Add a seller to test</h2>
         <form id="plugForm" class="form-grid">
@@ -266,12 +293,11 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
         </form>
       </div>
       <div class="list" id="plugList"></div>
-      <pre class="out" id="plugOut" hidden></pre>
     </section>
 
     <!-- BACKUP -->
     <section data-panel="settings" hidden>
-      <div class="page-head"><div><h1>Backup</h1><p class="sub">Your data lives on this device for now. Copy a backup before you clear your browser or switch phones.</p></div></div>
+      <div class="page-head"><div><h1>Backup</h1><p class="sub">Everything is saved online now, so it's the same on your phone and laptop. A copy now and then is still good practice.</p></div></div>
       <div class="two">
         <div class="card grid">
           <h2>Copy a backup</h2>
@@ -279,15 +305,10 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
           <div class="row"><button class="btn btn-ink" type="button" id="backupCopy">Copy backup</button></div>
           <pre class="out" id="backupOut" hidden></pre>
         </div>
-        <div class="card grid">
-          <h2>Restore from a backup</h2>
-          <textarea id="restoreText" rows="5" placeholder="Paste a backup here"></textarea>
-          <div class="row"><button class="btn" type="button" id="restoreBtn">Restore</button><span class="item-meta" id="restoreMsg"></span></div>
-        </div>
-        <div class="card grid">
-          <h2>Clear examples</h2>
-          <p class="item-meta">Removes the sample orders and team members, and keeps everything you added.</p>
-          <div class="row"><button class="btn btn-bad" type="button" id="clearExamples">Remove examples</button></div>
+        <div class="card grid" id="importCard" hidden>
+          <h2>Move this device's old data online</h2>
+          <p class="item-meta" id="importText"></p>
+          <div class="row"><button class="btn" type="button" id="importBtn">Move it online</button></div>
         </div>
       </div>
     </section>
@@ -295,20 +316,19 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 </div>
 <div class="toast" id="toast" hidden></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="../assets/data.js"></script>
 <script>
 (function () {
   "use strict";
-  var KEY = "sosick.admin.v1";
+  var S = window.SOSICK;
+  var sb = window.supabase.createClient(S.supabaseUrl, S.supabaseKey, { auth: { persistSession: true, detectSessionInUrl: true } });
   var $ = function (id) { return document.getElementById(id); };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
-  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   function kes(n) { return "KES " + Math.round(n).toLocaleString("en-KE"); }
   function today() { return new Date().toISOString().slice(0, 10); }
 
-  var CATEGORIES = [
-    ["denim", "Denim & Jeans"], ["kicks", "Sneakers & Shoes"], ["tops", "Tees, Shirts & Hoodies"], ["dresses", "Dresses & Skirts"],
-    ["bags", "Bags & Accessories"], ["phones", "Phones & Gadgets"], ["beauty", "Beauty & Grooming"], ["home", "Home & Hostel"]
-  ];
+  var CATEGORIES = S.categories.map(function (c) { return [c.id, c.label]; });
   var TEST = [
     ["mystery", "Mystery buy", "We ordered from them as a normal customer"],
     ["photo", "Photo = product", "What arrived matched what they posted"],
@@ -316,64 +336,117 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     ["time", "On time", "Delivered or handed over when promised"],
     ["issues", "Sorts issues", "Fixed a problem or handled a return properly"]
   ];
-  // Charges sellers pay once plug spots open. Customers never see these.
-  var PLUG_CHARGES = [
-    { id: "featured", label: "Featured plug spot", hint: "Shows first in its category (per week)", unit: "KES/wk", amount: 300, on: false, seller: true },
-    { id: "spotlight", label: "Homepage spotlight", hint: "Big card at the top of Verified Plugs (per week)", unit: "KES/wk", amount: 500, on: false, seller: true },
-    { id: "promo", label: "Sosick promo post", hint: "VosteyArts posts the plug on Sosick's socials (per post)", unit: "KES/post", amount: 400, on: false, seller: true },
-    { id: "listing", label: "Monthly plug listing", hint: "Keeps a verified plug listed. The badge itself is always earned, never sold", unit: "KES/mo", amount: 200, on: false, seller: true }
-  ];
   var STATUS = [["new", "New"], ["picked", "Picked up"], ["way", "On the way"], ["done", "Delivered"], ["cancel", "Cancelled"]];
 
-  function defaults() {
-    var now = Date.now();
-    return {
-      charges: [
-        { id: "base", label: "Delivery fee", hint: "Charged on every delivery", unit: "KES", amount: 100, on: true, always: true },
-        { id: "km", label: "Per km after the first 3 km", hint: "For longer trips", unit: "KES/km", amount: 20, on: false },
-        { id: "service", label: "Service fee", hint: "Percent of the item price", unit: "%", amount: 5, on: false },
-        { id: "rush", label: "Rush / ASAP fee", hint: "When the customer wants it right now", unit: "KES", amount: 50, on: false },
-        { id: "night", label: "Late-night fee", hint: "Orders after 9pm", unit: "KES", amount: 80, on: false },
-      ].concat(PLUG_CHARGES.map(function (c) { return Object.assign({}, c); })),
-      team: [
-        { id: uid(), name: "Example Rider", phone: "0700000001", role: "Rider", area: "Westlands", active: true, example: true },
-        { id: uid(), name: "Example Tester", phone: "0700000002", role: "Plug tester", area: "CBD", active: true, example: true }
-      ],
-      orders: [
-        { id: uid(), code: "SOS-1042", customer: "Example customer", phone: "0700000003", item: "Black baggy jeans size 32", pickup: "Gikomba", drop: "UoN Chiromo (Hall 5)", status: "new", rider: "", created: now - 3600e3, example: true },
-        { id: uid(), code: "SOS-1038", customer: "Example customer", phone: "0700000004", item: "Parcel from Easy Coach", pickup: "Easy Coach, CBD", drop: "Kilimani", status: "way", rider: "", created: now - 7200e3, example: true }
-      ],
-      plugs: []
-    };
-  }
-
-  var db;
-  try {
-    // The brand was renamed from "Soscik"; carry over anything saved under the old name.
-    if (!localStorage.getItem(KEY) && localStorage.getItem("soscik.admin.v1")) localStorage.setItem(KEY, localStorage.getItem("soscik.admin.v1"));
-    db = JSON.parse(localStorage.getItem(KEY)) || defaults();
-  } catch (e) { db = defaults(); }
-  // Older saves had a "Comrade Mode" switch; delivery is now always charged.
-  // Older saves: add any charge they're missing and refresh plug-charge labels.
-  defaults().charges.forEach(function (dc) {
-    var have = db.charges.filter(function (c) { return c.id === dc.id; })[0];
-    if (!have) db.charges.push(dc);
-    else if (dc.seller) { have.seller = true; have.label = dc.label; have.hint = dc.hint; }
-  });
-  if ("comradeMode" in db) {
-    delete db.comradeMode;
-    db.charges.forEach(function (c) { if (c.id === "base") { c.label = "Delivery fee"; c.hint = "Charged on every delivery"; c.on = true; c.always = true; } });
-  }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { toast("Couldn't save on this device"); } render(); }
+  var db = { orders: [], team: [], charges: [], plugs: [] };
 
   var toastTimer;
-  function toast(msg) { var t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2200); }
+  function toast(msg) { var t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2600); }
+
+  // Every database call goes through here so failures always say something useful.
+  function run(promise, okMsg) {
+    return promise.then(function (res) {
+      if (res.error) {
+        var m = res.error.message || "";
+        if (/JWT|expired|not authorized|permission/i.test(m)) toast("You've been signed out. Sign in again.");
+        else if (/live_needs_all_checks/.test(m)) toast("Tick all five Sosick Test checks first");
+        else toast("Couldn't save: " + m);
+        throw res.error;
+      }
+      if (okMsg) toast(okMsg);
+      return res.data;
+    }, function (err) { toast("No connection. Check your internet and try again."); throw err; });
+  }
 
   function copy(text, pre, okMsg) {
     pre.textContent = text; pre.hidden = false;
     var sel = function () { var r = document.createRange(); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected. Press copy"); };
     if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, sel); else sel();
   }
+
+  /* ---------- sign in ---------- */
+  var gateEmail = "";
+  function gateMsg(text, kind) { $("gMsg").textContent = text; $("gMsg").className = "gate-msg " + (kind || ""); }
+  function showCodeStep(on) {
+    $("gEmailWrap").hidden = on; $("gCodeWrap").hidden = !on; $("gBack").hidden = !on;
+    $("gBtn").textContent = on ? "Sign in with code" : "Email me a sign-in link";
+    $("gateIntro").textContent = on ? "Check your email (and spam folder) for a message from Supabase. Tap its sign-in link on this device and you're in." : "Sign in with your email. We'll email you a sign-in link. No password needed.";
+    if (on) $("gCode").focus();
+  }
+  $("gBack").addEventListener("click", function () { showCodeStep(false); gateMsg(""); });
+  $("gateForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var btn = $("gBtn");
+    if ($("gCodeWrap").hidden) {
+      gateEmail = $("gEmail").value.trim().toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(gateEmail)) { gateMsg("Type a full email address.", "bad"); return; }
+      btn.disabled = true; gateMsg("Sending…");
+      sb.auth.signInWithOtp({ email: gateEmail, options: { shouldCreateUser: true, emailRedirectTo: location.origin + location.pathname } }).then(function (res) {
+        btn.disabled = false;
+        if (res.error) {
+          gateMsg(/not allowed|signups|not found/i.test(res.error.message) ? "That email isn't set up as a Sosick admin." : /rate|seconds/i.test(res.error.message) ? "Too many tries. Wait a minute, then try again." : res.error.message, "bad");
+          return;
+        }
+        gateMsg("Sign-in email sent to " + gateEmail, "ok");
+        showCodeStep(true);
+      });
+    } else {
+      var code = $("gCode").value.replace(/\D/g, "");
+      if (code.length < 6) { gateMsg("Type the code from your email.", "bad"); return; }
+      btn.disabled = true; gateMsg("Checking…");
+      sb.auth.verifyOtp({ email: gateEmail, token: code, type: "email" }).then(function (res) {
+        btn.disabled = false;
+        if (res.error) { gateMsg("That code didn't work. Check it, or go back and send a new one.", "bad"); return; }
+        gateMsg("");
+      });
+    }
+  });
+  $("signOut").addEventListener("click", function () { sb.auth.signOut(); });
+
+  var started = false;
+  sb.auth.onAuthStateChange(function (event, session) {
+    if (!session) { started = false; $("app").hidden = true; $("gate").hidden = false; showCodeStep(false); return; }
+    if (started) return;
+    started = true;
+    // Supabase advises not calling it from inside this callback directly, so defer a tick.
+    setTimeout(function () { sb.rpc("is_admin").then(function (res) {
+      if (res.error || res.data !== true) {
+        sb.auth.signOut();
+        gateMsg("That email isn't set up as a Sosick admin.", "bad");
+        return;
+      }
+      $("whoami").textContent = session.user.email;
+      $("gate").hidden = true; $("app").hidden = false;
+      loadAll().then(checkOldLocalData).catch(function () {});
+    }); }, 0);
+  });
+
+  /* ---------- loading ---------- */
+  function loadAll() {
+    return Promise.all([
+      run(sb.from("orders").select("*").order("created_at", { ascending: false }).limit(500)),
+      run(sb.from("team").select("*").order("created_at")),
+      run(sb.from("charges").select("*").order("sort")),
+      run(sb.from("plugs").select("*").order("created_at", { ascending: false }))
+    ]).then(function (r) {
+      db.orders = r[0]; db.team = r[1]; db.charges = r[2]; db.plugs = r[3];
+      stamp(); render();
+    });
+  }
+  function stamp() { $("syncNote").textContent = "Updated " + new Date().toLocaleTimeString("en-KE", { hour: "2-digit", minute: "2-digit" }); }
+
+  // New website orders: check every 30 seconds while the page is open.
+  function refreshOrders(manual) {
+    return run(sb.from("orders").select("*").order("created_at", { ascending: false }).limit(500)).then(function (rows) {
+      var known = {}; db.orders.forEach(function (o) { known[o.id] = 1; });
+      var fresh = rows.filter(function (o) { return !known[o.id]; });
+      db.orders = rows; stamp(); render();
+      if (fresh.length) toast(fresh.length === 1 ? "New order " + fresh[0].code : fresh.length + " new orders");
+      else if (manual) toast("Orders are up to date");
+    });
+  }
+  setInterval(function () { if (!$("app").hidden && document.visibilityState === "visible") refreshOrders(false).catch(function () {}); }, 30000);
+  $("refreshOrders").addEventListener("click", function () { refreshOrders(true).catch(function () {}); });
 
   /* ---------- tabs ---------- */
   function showTab(name) {
@@ -384,12 +457,13 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   $("tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (b) showTab(b.dataset.tab); });
 
   /* ---------- helpers ---------- */
-  function exampleTag(x) { return x.example ? ' <span class="pill p-example">example</span>' : ""; }
+  function sourceTag(o) { return o.source === "website" ? ' <span class="pill src-web">website</span>' : ""; }
   function statusLabel(s) { var f = STATUS.filter(function (x) { return x[0] === s; })[0]; return f ? f[1] : s; }
   function riders() { return db.team.filter(function (m) { return m.active && m.role === "Rider"; }); }
   function memberName(id) { var m = db.team.filter(function (x) { return x.id === id; })[0]; return m ? m.name : ""; }
+  function isOpen(o) { return o.status !== "done" && o.status !== "cancel"; }
   function ago(ts) {
-    var m = Math.round((Date.now() - ts) / 60000);
+    var m = Math.round((Date.now() - new Date(ts).getTime()) / 60000);
     if (m < 1) return "just now"; if (m < 60) return m + " min ago";
     var h = Math.round(m / 60); if (h < 24) return h + " h ago";
     return new Date(ts).toLocaleDateString("en-KE", { day: "numeric", month: "short" });
@@ -401,28 +475,29 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     }
     return '<button class="btn btn-sm" data-act="rm" data-kind="' + kind + '" data-id="' + id + '">Remove</button>';
   }
+  function charge(id) { return db.charges.filter(function (c) { return c.id === id; })[0] || { amount: 0, is_on: false }; }
 
   /* ---------- overview ---------- */
   function renderOverview() {
-    var open = db.orders.filter(function (o) { return o.status !== "done" && o.status !== "cancel"; });
+    var open = db.orders.filter(isOpen);
     var dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
-    var todays = db.orders.filter(function (o) { return o.created >= dayStart.getTime(); });
+    var todays = db.orders.filter(function (o) { return new Date(o.created_at) >= dayStart; });
     var live = db.plugs.filter(function (p) { return p.status === "live"; });
     var activeTeam = db.team.filter(function (m) { return m.active; });
-    var extrasOn = db.charges.filter(function (c) { return !c.always && !c.seller && c.on; }).length;
+    var extrasOn = db.charges.filter(function (c) { return !c.always_on && !c.seller && c.is_on; }).length;
     $("ovSub").textContent = "Customers pay the item plus the delivery fee (" + kes(charge("base").amount) + ")" + (extrasOn ? ", plus " + extrasOn + " extra charge" + (extrasOn > 1 ? "s" : "") + " you've switched on." : ". No extras are on yet.");
     $("ovStats").innerHTML = [
       ["stat-hero", open.length, "Open orders"], ["", todays.length, "Orders today"],
       ["", activeTeam.length, "Team on duty"], ["", live.length, "Live plugs"]
     ].map(function (s) { return '<div class="stat ' + s[0] + '"><div class="stat-n num">' + s[1] + '</div><div class="stat-l">' + s[2] + "</div></div>"; }).join("");
     $("ovOrders").innerHTML = open.length ? open.slice(0, 5).map(function (o) {
-      return '<div class="item"><div><div class="item-title"><span class="mono">' + esc(o.code) + "</span>" + exampleTag(o) + '</div><div class="item-meta">' + esc(o.item) + " → " + esc(o.drop) + "</div></div>" +
+      return '<div class="item"><div><div class="item-title"><span class="mono">' + esc(o.code) + "</span>" + sourceTag(o) + '</div><div class="item-meta">' + esc(o.item) + " → " + esc(o.drop_to) + "</div></div>" +
         '<div class="item-side"><span class="pill p-' + o.status + '">' + statusLabel(o.status) + "</span></div></div>";
-    }).join("") : '<div class="empty">No open orders. New ones arrive on your WhatsApp.</div>';
+    }).join("") : '<div class="empty">No open orders. New website orders show up here by themselves.</div>';
     var r = riders();
     $("ovTeam").innerHTML = r.length ? r.map(function (m) {
       var load = open.filter(function (o) { return o.rider === m.id; }).length;
-      return '<div class="item"><div><div class="item-title">' + esc(m.name) + exampleTag(m) + '</div><div class="item-meta">' + esc(m.area || "Any area") + " · " + esc(m.phone) + "</div></div>" +
+      return '<div class="item"><div><div class="item-title">' + esc(m.name) + '</div><div class="item-meta">' + esc(m.area || "Any area") + " · " + esc(m.phone) + "</div></div>" +
         '<div class="item-side"><span class="pill ' + (load ? "p-way" : "p-active") + '">' + (load ? load + " order" + (load > 1 ? "s" : "") : "Free") + "</span></div></div>";
     }).join("") : '<div class="empty">No riders on duty. Add riders in the Team tab.</div>';
   }
@@ -432,19 +507,25 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   function parseSlip(text) {
     var get = function (label) { var m = text.match(new RegExp("^\\s*" + label + ":\\s*(.+)$", "mi")); return m ? m[1].trim() : ""; };
     var code = (text.match(/SOS-\d{4}/) || [])[0];
-    return { code: code || "SOS-" + Math.floor(1000 + Math.random() * 9000), item: get("Item"), pickup: get("Pick up from"), drop: get("Deliver to"), customer: get("Name"), phone: get("Phone"), pin: get("My location pin") };
+    var pin = get("My location pin");
+    return {
+      code: code || "SOS-" + Math.floor(1000 + Math.random() * 9000),
+      item: get("Item").slice(0, 500), pickup: get("Pick up from").slice(0, 200), drop_to: get("Deliver to").slice(0, 300),
+      customer: get("Name").slice(0, 80), phone: get("Phone").slice(0, 16), when_wanted: get("When").slice(0, 40), pay: get("Pay").slice(0, 40),
+      pin: /^https:\/\/maps\.google\.com\/\?q=-?[0-9.]+,-?[0-9.]+$/.test(pin) ? pin : ""
+    };
   }
   $("orderForm").addEventListener("submit", function (e) {
     e.preventDefault();
     var text = $("oPaste").value.trim();
     if (!text) { $("oMsg").textContent = "Paste an order slip first."; return; }
     var o = parseSlip(text);
-    if (!o.item && !o.drop) { o.item = text.slice(0, 140); }
+    if (!o.item && !o.drop_to) o.item = text.slice(0, 500);
     if (db.orders.some(function (x) { return x.code === o.code; })) { $("oMsg").textContent = o.code + " is already logged."; return; }
-    o.id = uid(); o.status = "new"; o.rider = ""; o.created = Date.now();
-    db.orders.unshift(o);
-    $("oPaste").value = ""; $("oMsg").textContent = "";
-    save(); toast(o.code + " added");
+    o.source = "admin";
+    run(sb.from("orders").insert(o).select().single(), o.code + " added").then(function (row) {
+      db.orders.unshift(row); $("oPaste").value = ""; $("oMsg").textContent = ""; render();
+    }).catch(function () {});
   });
   $("orderFilter").addEventListener("click", function (e) {
     var b = e.target.closest("[data-f]"); if (!b) return;
@@ -454,7 +535,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   });
   function renderOrders() {
     var list = db.orders.filter(function (o) {
-      if (orderFilter === "open") return o.status !== "done" && o.status !== "cancel";
+      if (orderFilter === "open") return isOpen(o);
       if (orderFilter === "done") return o.status === "done";
       return true;
     });
@@ -463,11 +544,14 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
       var riderOpts = '<option value="">No rider yet</option>' + r.map(function (m) { return '<option value="' + m.id + '"' + (o.rider === m.id ? " selected" : "") + ">" + esc(m.name) + "</option>"; }).join("") +
         (o.rider && !r.some(function (m) { return m.id === o.rider; }) ? '<option value="' + esc(o.rider) + '" selected>' + esc(memberName(o.rider) || "Former rider") + "</option>" : "");
       var statusOpts = STATUS.map(function (s) { return '<option value="' + s[0] + '"' + (o.status === s[0] ? " selected" : "") + ">" + s[1] + "</option>"; }).join("");
+      var waNum = /^0[17]\d{8}$/.test(o.phone || "") ? "254" + o.phone.slice(1) : "";
       return '<div class="item"><div>' +
-        '<div class="item-title"><span class="mono">' + esc(o.code) + '</span><span class="pill p-' + o.status + '">' + statusLabel(o.status) + "</span>" + exampleTag(o) + "</div>" +
+        '<div class="item-title"><span class="mono">' + esc(o.code) + '</span><span class="pill p-' + o.status + '">' + statusLabel(o.status) + "</span>" + sourceTag(o) + "</div>" +
         '<div class="item-meta"><b>' + esc(o.item || "Item not stated") + "</b></div>" +
-        '<div class="item-meta">From ' + esc(o.pickup || "(we find it)") + " → " + esc(o.drop || "?") + "</div>" +
-        '<div class="item-meta">' + esc(o.customer || "Customer") + (o.phone ? " · " + esc(o.phone) : "") + " · " + ago(o.created) +
+        '<div class="item-meta">From ' + esc(o.pickup || "(we find it)") + " → " + esc(o.drop_to || "?") + "</div>" +
+        '<div class="item-meta">' + esc(o.customer || "Customer") +
+        (o.phone ? " · " + (waNum ? '<a href="https://wa.me/' + waNum + '" target="_blank" rel="noopener">' + esc(o.phone) + "</a>" : esc(o.phone)) : "") +
+        (o.when_wanted ? " · " + esc(o.when_wanted) : "") + (o.pay ? " · " + esc(o.pay) : "") + " · " + ago(o.created_at) +
         (o.pin ? ' · <a href="' + esc(o.pin) + '" target="_blank" rel="noopener">Map pin</a>' : "") + "</div></div>" +
         '<div class="item-side"><select data-act="status" data-id="' + o.id + '" aria-label="Status for ' + esc(o.code) + '">' + statusOpts + "</select>" +
         '<select data-act="rider" data-id="' + o.id + '" aria-label="Rider for ' + esc(o.code) + '">' + riderOpts + "</select>" +
@@ -478,16 +562,16 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   /* ---------- team ---------- */
   $("teamForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    var name = $("tName").value.trim(), phone = $("tPhone").value.replace(/\s/g, "");
+    var form = this, name = $("tName").value.trim(), phone = $("tPhone").value.replace(/\s/g, "");
     if (!name) { $("tMsg").textContent = "Add a name."; return; }
     if (!/^(\+?254|0)[17]\d{8}$/.test(phone)) { $("tMsg").textContent = "Phone should look like 07XX XXX XXX."; return; }
-    db.team.push({ id: uid(), name: name, phone: phone, role: $("tRole").value, area: $("tArea").value.trim(), active: true, joined: today() });
-    this.reset(); $("tMsg").textContent = "";
-    save(); toast(name + " added to the team");
+    run(sb.from("team").insert({ name: name, phone: phone, role: $("tRole").value, area: $("tArea").value.trim() }).select().single(), name + " added to the team").then(function (row) {
+      db.team.push(row); form.reset(); $("tMsg").textContent = ""; render();
+    }).catch(function () {});
   });
   function renderTeam() {
     $("teamList").innerHTML = db.team.length ? db.team.map(function (m) {
-      return '<div class="item"><div><div class="item-title">' + esc(m.name) + ' <span class="pill ' + (m.active ? "p-active" : "p-off") + '">' + (m.active ? "On duty" : "Off duty") + "</span>" + exampleTag(m) + "</div>" +
+      return '<div class="item"><div><div class="item-title">' + esc(m.name) + ' <span class="pill ' + (m.active ? "p-active" : "p-off") + '">' + (m.active ? "On duty" : "Off duty") + "</span></div>" +
         '<div class="item-meta">' + esc(m.role) + " · " + esc(m.area || "Any area") + ' · <a href="https://wa.me/' + esc(m.phone.replace(/^0/, "254").replace(/^\+/, "")) + '" target="_blank" rel="noopener">' + esc(m.phone) + "</a></div></div>" +
         '<div class="item-side"><label class="switch"><input type="checkbox" data-act="duty" data-id="' + m.id + '"' + (m.active ? " checked" : "") + '><i></i><span class="sr-only">On duty</span></label>' +
         removeControl("team", m.id) + "</div></div>";
@@ -496,34 +580,33 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 
   /* ---------- charges ---------- */
   function chargeRow(c) {
-    var toggle = c.always
+    var toggle = c.always_on
       ? '<span class="pill p-live">Always on</span>'
-      : '<label class="switch"><input type="checkbox" data-act="charge" data-id="' + c.id + '"' + (c.on ? " checked" : "") + '><i></i><span class="sr-only">Charge ' + esc(c.label) + "</span></label>";
+      : '<label class="switch"><input type="checkbox" data-act="charge" data-id="' + c.id + '"' + (c.is_on ? " checked" : "") + '><i></i><span class="sr-only">Charge ' + esc(c.label) + "</span></label>";
     return '<div class="charge"><div><b>' + esc(c.label) + "</b><small>" + esc(c.hint) + "</small></div>" +
-      '<div class="amt"><input type="number" min="0" value="' + c.amount + '" data-act="amount" data-id="' + c.id + '" aria-label="' + esc(c.label) + ' amount"><span>' + esc(c.unit) + "</span></div>" + toggle + "</div>";
+      '<div class="amt"><input type="number" min="0" value="' + Number(c.amount) + '" data-act="amount" data-id="' + c.id + '" aria-label="' + esc(c.label) + ' amount"><span>' + esc(c.unit) + "</span></div>" + toggle + "</div>";
   }
   function renderCharges() {
-    var extras = db.charges.filter(function (c) { return !c.always && !c.seller; });
-    var on = extras.filter(function (c) { return c.on; });
+    var extras = db.charges.filter(function (c) { return !c.always_on && !c.seller; });
+    var on = extras.filter(function (c) { return c.is_on; });
     $("chargeHead").textContent = on.length ? "Delivery + " + on.length + " extra" + (on.length > 1 ? "s" : "") : "Delivery fee only";
     $("comradeText").textContent = on.length
-      ? "Customers now pay delivery plus: " + on.map(function (c) { return c.label.toLowerCase(); }).join(", ") + ". Tell Sheldon so the website stops saying \"no extra charges\"."
+      ? "Customers now pay delivery plus: " + on.map(function (c) { return c.label.toLowerCase(); }).join(", ") + ". The website no longer says \"no extra charges\"."
       : "Customers pay the item plus " + kes(charge("base").amount) + " delivery. All extras are off.";
-    $("chargeList").innerHTML = db.charges.filter(function (c) { return c.always; }).map(chargeRow).join("");
+    $("chargeList").innerHTML = db.charges.filter(function (c) { return c.always_on; }).map(chargeRow).join("");
     $("extraList").innerHTML = extras.map(chargeRow).join("");
     $("plugChargeList").innerHTML = db.charges.filter(function (c) { return c.seller; }).map(chargeRow).join("");
     renderQuote();
   }
-  function charge(id) { return db.charges.filter(function (c) { return c.id === id; })[0]; }
   function renderQuote() {
     var item = +$("qItem").value || 0, km = +$("qKm").value || 0;
     var lines = [["Item", item]];
-    var add = function (id, label, amount) { var c = charge(id); if (c && c.on && amount > 0) lines.push([label, amount]); };
-    add("base", "Delivery fee", charge("base").amount);
+    var add = function (id, label, amount) { var c = charge(id); if (c.is_on && amount > 0) lines.push([label, amount]); };
+    add("base", "Delivery fee", +charge("base").amount);
     add("km", "Distance (" + Math.max(0, km - 3) + " km × " + charge("km").amount + ")", Math.max(0, km - 3) * charge("km").amount);
     add("service", "Service fee (" + charge("service").amount + "%)", item * charge("service").amount / 100);
-    if ($("qRush").value === "1") add("rush", "Rush fee", charge("rush").amount);
-    if ($("qNight").value === "1") add("night", "Late-night fee", charge("night").amount);
+    if ($("qRush").value === "1") add("rush", "Rush fee", +charge("rush").amount);
+    if ($("qNight").value === "1") add("night", "Late-night fee", +charge("night").amount);
     var total = lines.reduce(function (s, l) { return s + l[1]; }, 0);
     $("quote").innerHTML = "<table>" + lines.map(function (l) { return "<tr><td>" + esc(l[0]) + '</td><td class="num">' + kes(l[1]) + "</td></tr>"; }).join("") +
       '<tr class="total"><td>Customer pays</td><td class="num">' + kes(total) + "</td></tr></table>" +
@@ -532,7 +615,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   ["qItem", "qKm", "qRush", "qNight"].forEach(function (id) { $(id).addEventListener("input", renderQuote); });
 
   /* ---------- plugs ---------- */
-  $("pCat").innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + "</option>"; }).join("");
+  $("pCat").innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + esc(c[1]) + "</option>"; }).join("");
   $("pChecks").innerHTML = "<b>Sosick Test</b>" + TEST.map(function (t) {
     return '<label><input type="checkbox" data-check="' + t[0] + '"><span>' + t[1] + "<small>" + t[2] + "</small></span></label>";
   }).join("");
@@ -545,15 +628,20 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     var name = $("pName").value.trim(); if (!name) return;
     var link = $("pLink").value.trim();
     if (link && !/^https?:\/\//i.test(link)) link = "https://" + link;
-    var data = { name: name, category: $("pCat").value, area: $("pArea").value.trim(), link: link, sells: $("pSells").value.trim(), checks: checksFromForm(), level: $("pLevel").value, tested: $("pTested").value };
+    var data = { name: name, category: $("pCat").value, area: $("pArea").value.trim(), link: link, sells: $("pSells").value.trim(), checks: checksFromForm(), level: $("pLevel").value, tested: $("pTested").value || null };
+    var q;
     if (editingPlug) {
-      var p = db.plugs.filter(function (x) { return x.id === editingPlug; })[0];
-      Object.assign(p, data);
-      if (!passed(p) && p.status === "live") p.status = "testing";
+      var cur = db.plugs.filter(function (x) { return x.id === editingPlug; })[0];
+      if (cur && cur.status === "live" && !passed(data)) data.status = "testing";
+      q = sb.from("plugs").update(data).eq("id", editingPlug).select().single();
     } else {
-      data.id = uid(); data.status = "testing"; db.plugs.unshift(data);
+      q = sb.from("plugs").insert(data).select().single();
     }
-    resetPlugForm(); save(); toast(name + " saved");
+    run(q, name + " saved").then(function (row) {
+      var i = db.plugs.findIndex(function (x) { return x.id === row.id; });
+      if (i >= 0) db.plugs[i] = row; else db.plugs.unshift(row);
+      resetPlugForm(); render();
+    }).catch(function () {});
   });
   function resetPlugForm() {
     editingPlug = null; $("plugForm").reset(); $("pTested").value = today();
@@ -574,27 +662,51 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
         '</div><div class="item-side">' + action + '<button class="btn btn-sm" data-act="edit" data-id="' + p.id + '">Edit</button>' + removeControl("plug", p.id) + "</div></div>";
     }).join("") : '<div class="empty">No sellers yet. Add the first one you\'re testing above.</div>';
   }
-  $("exportPlugs").addEventListener("click", function () {
-    var live = db.plugs.filter(function (p) { return p.status === "live"; }).map(function (p) {
-      return { name: p.name, category: p.category, area: p.area, sells: p.sells, link: p.link, tested: p.tested, level: p.level };
-    });
-    if (!live.length) { toast("No live plugs yet"); return; }
-    copy("plugs: " + JSON.stringify(live, null, 2), $("plugOut"), live.length + " plug" + (live.length > 1 ? "s" : "") + " copied. Send to Sheldon");
-  });
 
-  /* ---------- backup ---------- */
-  $("backupCopy").addEventListener("click", function () { copy(JSON.stringify(db), $("backupOut"), "Backup copied"); });
-  $("restoreBtn").addEventListener("click", function () {
-    try {
-      var d = JSON.parse($("restoreText").value);
-      if (!d || !Array.isArray(d.orders) || !Array.isArray(d.team) || !Array.isArray(d.charges)) throw 0;
-      db = d; $("restoreText").value = ""; $("restoreMsg").textContent = ""; save(); toast("Backup restored");
-    } catch (e) { $("restoreMsg").textContent = "That doesn't look like a Sosick backup."; }
+  /* ---------- backup + old local data ---------- */
+  $("backupCopy").addEventListener("click", function () {
+    copy(JSON.stringify({ exported: new Date().toISOString(), orders: db.orders, team: db.team, charges: db.charges, plugs: db.plugs }), $("backupOut"), "Backup copied");
   });
-  $("clearExamples").addEventListener("click", function () {
-    db.orders = db.orders.filter(function (o) { return !o.example; });
-    db.team = db.team.filter(function (m) { return !m.example; });
-    save(); toast("Examples removed");
+  var oldLocal = null;
+  function checkOldLocalData() {
+    try {
+      if (localStorage.getItem("sosick.imported")) return;
+      var raw = localStorage.getItem("sosick.admin.v1") || localStorage.getItem("soscik.admin.v1");
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      oldLocal = {
+        team: (d.team || []).filter(function (x) { return !x.example; }),
+        orders: (d.orders || []).filter(function (x) { return !x.example; }),
+        plugs: d.plugs || []
+      };
+      var n = oldLocal.team.length + oldLocal.orders.length + oldLocal.plugs.length;
+      if (!n) return;
+      $("importText").textContent = "This device still has " + oldLocal.team.length + " team member(s), " + oldLocal.orders.length + " order(s) and " + oldLocal.plugs.length + " plug(s) from before online saving. Move them online so they show up everywhere.";
+      $("importCard").hidden = false;
+    } catch (e) {}
+  }
+  $("importBtn").addEventListener("click", function () {
+    if (!oldLocal) return;
+    var btn = this; btn.disabled = true;
+    var idMap = {};
+    run(sb.from("team").insert(oldLocal.team.map(function (m) { return { name: m.name, phone: m.phone, role: m.role, area: m.area || "", active: m.active !== false }; })).select())
+      .then(function (rows) {
+        oldLocal.team.forEach(function (m, i) { if (rows[i]) idMap[m.id] = rows[i].id; });
+        return run(sb.from("orders").insert(oldLocal.orders.map(function (o) {
+          return { code: /^SOS-\d{4}$/.test(o.code) ? o.code : "SOS-" + Math.floor(1000 + Math.random() * 9000), customer: (o.customer || "").slice(0, 80), phone: (o.phone || "").slice(0, 16), item: (o.item || "").slice(0, 500), pickup: (o.pickup || "").slice(0, 200), drop_to: (o.drop || "").slice(0, 300), status: o.status || "new", rider: idMap[o.rider] || null, source: "admin", created_at: new Date(o.created || Date.now()).toISOString() };
+        })));
+      })
+      .then(function () {
+        return run(sb.from("plugs").insert(oldLocal.plugs.map(function (p) {
+          return { name: p.name, category: p.category, area: p.area || "", sells: p.sells || "", link: p.link || "", level: p.level || "verified", tested: p.tested || null, checks: p.checks || {}, status: p.status === "live" && passed(p) ? "live" : (p.status === "removed" ? "removed" : "testing") };
+        })));
+      })
+      .then(function () {
+        try { localStorage.setItem("sosick.imported", "1"); } catch (e) {}
+        $("importCard").hidden = true; toast("Old data moved online");
+        return loadAll();
+      })
+      .catch(function () { btn.disabled = false; });
   });
 
   /* ---------- shared clicks / changes ---------- */
@@ -605,12 +717,21 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     if (act === "rm-no") { pendingRemove = null; render(); return; }
     if (act === "rm-yes") {
       var k = { order: "orders", team: "team", plug: "plugs" }[b.dataset.kind];
-      db[k] = db[k].filter(function (x) { return x.id !== id; });
-      pendingRemove = null; save(); toast("Removed"); return;
+      run(sb.from(k).delete().eq("id", id), "Removed").then(function () {
+        db[k] = db[k].filter(function (x) { return x.id !== id; });
+        if (k === "team") db.orders.forEach(function (o) { if (o.rider === id) o.rider = null; });
+        pendingRemove = null; render();
+      }).catch(function () {});
+      return;
     }
     var p = db.plugs.filter(function (x) { return x.id === id; })[0];
-    if (act === "live" && p && passed(p)) { p.status = "live"; save(); toast(p.name + " is live. Copy plugs for the website"); }
-    if (act === "unlive" && p) { p.status = "removed"; save(); toast("Badge removed from " + p.name); }
+    if ((act === "live" || act === "unlive") && p) {
+      if (act === "live" && !passed(p)) return;
+      var status = act === "live" ? "live" : "removed";
+      run(sb.from("plugs").update({ status: status }).eq("id", id).select().single(), act === "live" ? p.name + " is live on the website" : "Badge removed from " + p.name).then(function (row) {
+        Object.assign(p, row); render();
+      }).catch(function () {});
+    }
     if (act === "edit" && p) {
       editingPlug = id;
       $("pName").value = p.name; $("pCat").value = p.category; $("pArea").value = p.area || ""; $("pLink").value = p.link || "";
@@ -624,25 +745,30 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     var el = e.target, id = el.dataset.id, act = el.dataset.act;
     if (!act) return;
     if (act === "status" || act === "rider") {
-      var o = db.orders.filter(function (x) { return x.id === id; })[0];
-      if (o) { o[act] = el.value; save(); toast(o.code + (act === "status" ? ": " + statusLabel(el.value) : el.value ? ": rider assigned" : ": rider cleared")); }
+      var o = db.orders.filter(function (x) { return x.id === id; })[0]; if (!o) return;
+      var patch = {}; patch[act] = el.value || null;
+      run(sb.from("orders").update(patch).eq("id", id), o.code + (act === "status" ? ": " + statusLabel(el.value) : el.value ? ": rider assigned" : ": rider cleared"))
+        .then(function () { o[act] = patch[act]; render(); }, function () { render(); });
     }
-    if (act === "duty") { var m = db.team.filter(function (x) { return x.id === id; })[0]; if (m) { m.active = el.checked; save(); } }
+    if (act === "duty") {
+      var m = db.team.filter(function (x) { return x.id === id; })[0]; if (!m) return;
+      run(sb.from("team").update({ active: el.checked }).eq("id", id), m.name + (el.checked ? " is on duty" : " is off duty"))
+        .then(function () { m.active = el.checked; render(); }, function () { render(); });
+    }
     if (act === "charge" || act === "amount") {
       var c = charge(id);
-      if (act === "charge") c.on = el.checked; else c.amount = Math.max(0, +el.value || 0);
-      save();
-      if (act === "charge") toast(c.label + (c.on ? " is on" : " is off"));
+      var cp = act === "charge" ? { is_on: el.checked } : { amount: Math.max(0, +el.value || 0) };
+      run(sb.from("charges").update(cp).eq("id", id), act === "charge" ? c.label + (el.checked ? " is on" : " is off") : c.label + " set to " + cp.amount)
+        .then(function () { Object.assign(c, cp); render(); }, function () { render(); });
     }
   });
 
   function render() {
-    $("cOrders").textContent = db.orders.filter(function (o) { return o.status !== "done" && o.status !== "cancel"; }).length;
+    $("cOrders").textContent = db.orders.filter(isOpen).length;
     $("cTeam").textContent = db.team.length;
     $("cPlugs").textContent = db.plugs.filter(function (p) { return p.status === "live"; }).length;
     renderOverview(); renderOrders(); renderTeam(); renderCharges(); renderPlugs();
   }
-  render();
   var startTab = "overview";
   try { startTab = sessionStorage.getItem("sosick.tab") || "overview"; } catch (e) {}
   showTab(startTab);

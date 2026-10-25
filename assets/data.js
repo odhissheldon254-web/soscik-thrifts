@@ -7,6 +7,11 @@ window.SOSICK = {
   whatsappDisplay: "0112 275 881", // how it shows on the page
   city: "Nairobi",
 
+  // Supabase (VosteyArts' own account). This key is the PUBLIC one; it is
+  // meant to be in the website. Database rules decide what it can do.
+  supabaseUrl: "https://esluujzrscwswxjehkrm.supabase.co",
+  supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHV1anpyc2N3c3d4amVoa3JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NzgyODIsImV4cCI6MjEwODQ1NDI4Mn0.sSMmIE7bRZX3EXCRZnrG6HCS4BZRGeTev99EExuigSI",
+
   // Delivery is always charged. Put the starting price here once VosteyArts
   // settles it (e.g. 150) and the site shows "from KES 150". Leave null to
   // just say the fee is confirmed on WhatsApp.

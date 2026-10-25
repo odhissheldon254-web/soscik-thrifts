@@ -93,9 +93,10 @@ a { color: inherit; }
 }
 .topbar-in { display: flex; align-items: center; gap: 20px; padding-block: 10px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.brand img { width: 40px; height: 40px; border-radius: 10px; }
-.brand-word { font: 400 1.55rem/0.9 var(--f-display); letter-spacing: 0.02em; display: flex; flex-direction: column; }
-.brand-word small { font: 700 0.62rem/1.2 var(--f-mono); letter-spacing: 0.42em; }
+.brand-mark { height: 44px; width: auto; }
+.brand-sub { font: 700 0.7rem/1 var(--f-mono); letter-spacing: 0.32em; }
+@media (max-width: 420px) { .brand-mark { height: 36px; } .brand-sub { display: none; } }
+.footer-mark { height: 56px; width: auto; margin-bottom: 14px; }
 .nav { display: flex; gap: 22px; margin-left: auto; }
 .nav a { font-weight: 700; text-decoration: none; font-size: 0.95rem; }
 .nav a:hover { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }

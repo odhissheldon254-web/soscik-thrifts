@@ -15,29 +15,16 @@ Plain HTML, CSS and JavaScript with no build step. It can be hosted free on GitH
 | `assets/logo.svg`, `favicon.svg` | Placeholder logo. Swap in the real one when it lands |
 | `admin/index.html` | VosteyArts' portal: orders, team, charges, plugs, backup |
 
-## How an order flows
+## How it fits together
 
-1. The customer fills the slip (or chats with Sosi).
-2. WhatsApp opens with the order already written, plus an `SOS-1234` code and an optional map pin.
-3. VosteyArts pastes the slip into **Admin → Orders**, assigns a rider and moves it New → Picked up → On the way → Delivered.
+- **Database:** Supabase, in VosteyArts' own account (project `esluujzrscwswxjehkrm`, region eu-west-1). `supabase/setup.sql` creates everything; put the owner's email in it before running.
+- **Website orders** open WhatsApp with the slip **and** drop a copy into the admin's Orders list, marked *website*.
+- **Verified Plugs:** add a seller in Admin → Verified Plugs, tick the five Sosick Test checks, press **Go live**. It shows on the website straight away. The database itself refuses "live" unless all five checks are ticked.
+- **Charges:** switch extras on in Admin → Charges. The website stops saying "no extra charges" by itself.
+- **Admin sign-in:** email link, no password. Only emails in the `admins` table get any data. Anyone else can sign in but sees nothing.
+- **Public key:** `assets/data.js` holds the Supabase *public* (anon) key. That's intended; the database rules decide what it can do. Never put the service-role key in this repo.
 
-## Adding a Verified Plug
+## Logo
 
-1. In **Admin → Verified Plugs**, add the seller and tick the five Sosick Test checks as they pass.
-2. **Go live** only unlocks once all five are ticked.
-3. Press **Copy live plugs for website** and paste the result over `plugs: []` in `assets/data.js`.
-
-## Turning on charges later
-
-The delivery fee is charged from day one. Set its amount in **Admin → Charges**, and if you want the site to show
-a starting price, put it in `deliveryFeeFrom` in `assets/data.js` (e.g. `150`).
-
-The extra charges (per km, service fee, rush, late-night, featured spot) are set up but **off**. When VosteyArts
-decides the time is right, he switches them on in **Admin → Charges** and you set `extraFees: true` in
-`assets/data.js` so the website stops saying "no extra charges".
-
-## Known limits (next steps)
-
-- Admin data is saved **on the device only** (browser storage). Next step: a shared database and real login (e.g. Supabase) so orders, team and plugs sync and plugs publish automatically.
-- `/admin/` has no password yet. It can't change the public site, only that device's own data, but a login comes with the database.
-- Sosi is a scripted helper. A real AI brain can be added later behind a small server (costs money per chat).
+`tools/make_logo.py` draws the logo (SOSICK in chunky block letters on a black bar with a yellow stripe). It writes:
+`assets/logo-wordmark.svg` (animated, header), `logo-wordmark-static.svg`, `logo-badge.svg` (round badge for profile pictures), `logo.svg` + `favicon.svg` (square icon).

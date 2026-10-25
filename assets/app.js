@@ -129,6 +129,7 @@
     form.hidden = true;
     $("sentCard").hidden = false;
     window.open(link, "_blank", "noopener");
+    saveOrderOnline(order);
 
     function fail(el, text) {
       el.classList.add("is-bad");
@@ -167,6 +168,49 @@
     if (o.phone) $("custPhone").value = o.phone;
     $("sentCard").hidden = true; form.hidden = false;
     document.getElementById("order").scrollIntoView({ behavior: "smooth" });
+  }
+
+  /* ---------------- Supabase (public key, read-only except new orders) ---------------- */
+  function api(path, opts) {
+    opts = opts || {};
+    opts.headers = Object.assign({ apikey: S.supabaseKey, Authorization: "Bearer " + S.supabaseKey }, opts.headers || {});
+    return fetch(S.supabaseUrl + "/rest/v1/" + path, opts);
+  }
+
+  // A copy of each website order goes straight into the admin's order list.
+  // WhatsApp stays the main channel, so a failure here is silent.
+  function saveOrderOnline(o) {
+    if (!S.supabaseUrl) return;
+    try {
+      api("orders", {
+        method: "POST", keepalive: true,
+        headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify({
+          code: o.code, customer: o.name.slice(0, 80), phone: o.phone, item: o.item.slice(0, 500),
+          pickup: o.pickup.slice(0, 200), drop_to: (o.dropArea + (o.landmark ? " (" + o.landmark + ")" : "")).slice(0, 300),
+          pin: o.pin, when_wanted: o.when, pay: o.pay, source: "website"
+        })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  function applyCharges(rows) {
+    S.extraFees = rows.some(function (c) { return c.is_on && c.id !== "base"; });
+    var feeText = S.deliveryFeeFrom ? "from KES " + Number(S.deliveryFeeFrom).toLocaleString("en-KE") : "confirmed on WhatsApp";
+    $("feeLine").innerHTML = "Delivery fee: <strong>" + esc(feeText) + "</strong> before pickup." + (S.extraFees ? "" : " No extra charges.");
+    $("comradeSticker").textContent = S.extraFees ? "Now delivering across Nairobi" : "Comrade launch · just delivery, no extra charges";
+  }
+
+  function loadLive() {
+    if (!S.supabaseUrl) return;
+    api("plugs?select=name,category,area,sells,link,level,tested&status=eq.live&order=tested.desc.nullslast")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (rows) { if (rows) { S.plugs = rows; renderPlugs(); } })
+      .catch(function () {});
+    api("charges?select=id,is_on&seller=eq.false")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (rows) { if (rows) applyCharges(rows); })
+      .catch(function () {});
   }
 
   /* ---------------- WhatsApp links ---------------- */
@@ -268,6 +312,7 @@
   });
   $("plugSearch").addEventListener("input", renderPlugs);
   renderPlugs();
+  loadLive();
 
   function showPlugSearch(q) {
     $("plugSearch").value = q;
