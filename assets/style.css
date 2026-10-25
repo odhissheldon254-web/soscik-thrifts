@@ -196,6 +196,8 @@ input:focus, textarea:focus, select:focus { outline: none; box-shadow: 0 0 0 3px
 .form-error { margin: 0; padding: 10px 12px; border-radius: 10px; background: #FFF1EE; color: var(--bad); font-weight: 700; border: 2px solid var(--bad); }
 .ticket-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; border-top: 2.5px dashed var(--ink); padding-top: 18px; }
 .fee-line { margin: 0; font-size: 0.92rem; }
+.privacy-note { margin: -4px 0 0; font-size: 0.82rem; }
+.privacy-note a, .footer-fine a { color: inherit; font-weight: 700; }
 
 .sent { background: var(--sun); border: 3px solid var(--ink); border-radius: var(--r); box-shadow: 8px 8px 0 var(--ink); padding: 24px; min-width: 0; }
 .sent-msg { background: #fff; border: 2px solid var(--ink); border-radius: 10px; padding: 14px; white-space: pre-wrap; word-break: break-word; font-size: 0.85rem; max-height: 300px; overflow: auto; }
