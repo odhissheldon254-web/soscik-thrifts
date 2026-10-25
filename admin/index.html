@@ -166,6 +166,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 .rail-out { all: unset; cursor: pointer; color: var(--sun); text-decoration: underline; }
 .src-web { color: var(--ink); background: var(--sun-soft); border-color: var(--ink); }
 .sync { font: 700 .72rem/1 var(--f-mono); color: var(--muted); }
+.linkish-admin { background: none; border: 0; padding: 0; font: inherit; font-weight: 800; color: var(--ink); text-decoration: underline; cursor: pointer; }
 </style>
 
 <!-- SIGN IN -->
@@ -173,11 +174,11 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   <form class="gate-card" id="gateForm" novalidate>
     <img src="../assets/logo-wordmark.svg" alt="Sosick" width="190" height="56" style="width:190px;height:auto;border-radius:0">
     <h1>Admin</h1>
-    <p id="gateIntro">Sign in with your email. We'll email you a sign-in link. No password needed.</p>
-    <label class="f" id="gEmailWrap">Email<input id="gEmail" type="email" autocomplete="email" inputmode="email" required></label>
-    <label class="f" id="gCodeWrap" hidden>Code (only if the email shows one)<input id="gCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label>
-    <button class="btn btn-ink" type="submit" id="gBtn">Email me a sign-in link</button>
-    <button class="btn" type="button" id="gBack" hidden>Use a different email</button>
+    <p id="gateIntro">Sign in with your email and passcode.</p>
+    <label class="f">Email<input id="gEmail" type="email" autocomplete="username" inputmode="email" required></label>
+    <label class="f">Passcode<input id="gPass" type="password" autocomplete="current-password"></label>
+    <button class="btn btn-ink" type="submit" id="gBtn">Sign in</button>
+    <button class="btn" type="button" id="gLink">First time, or forgot your passcode? Email me a sign-in link</button>
     <p class="gate-msg" id="gMsg" role="alert"></p>
   </form>
 </div>
@@ -194,12 +195,32 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
       <button role="tab" data-tab="team" aria-selected="false">Team <span class="tab-count" id="cTeam">0</span></button>
       <button role="tab" data-tab="charges" aria-selected="false">Charges</button>
       <button role="tab" data-tab="plugs" aria-selected="false">Verified Plugs <span class="tab-count" id="cPlugs">0</span></button>
+      <button role="tab" data-tab="passcode" aria-selected="false">Passcode</button>
       <button role="tab" data-tab="settings" aria-selected="false">Backup</button>
     </nav>
     <div class="rail-foot">Signed in as <b id="whoami">VosteyArts</b><br><button class="rail-out" type="button" id="signOut">Sign out</button> · <a href="../">View the website</a></div>
   </aside>
 
   <main class="main"><div class="main-in">
+
+    <div class="demo-note" id="passNudge" role="note" hidden><b>Set a passcode.</b><span>Then you can sign in straight away, without waiting for an email. <button class="linkish-admin" type="button" data-goto="passcode">Set it now →</button></span></div>
+
+    <!-- PASSCODE -->
+    <section data-panel="passcode" hidden>
+      <div class="page-head"><div><h1>Passcode</h1><p class="sub" id="passState"></p></div></div>
+      <div class="card" style="max-width:460px">
+        <form id="passForm" class="grid">
+          <label class="f">New passcode<input id="pass1" type="password" autocomplete="new-password" minlength="6"></label>
+          <label class="f">Type it again<input id="pass2" type="password" autocomplete="new-password" minlength="6"></label>
+          <p class="item-meta" style="margin:0">At least 6 characters. Letters and numbers together are strongest. Only you know it; it isn't stored on this page.</p>
+          <div class="row"><button class="btn btn-ink" type="submit" id="passBtn">Set passcode</button><span class="item-meta" id="passMsg" role="alert"></span></div>
+        </form>
+      </div>
+      <div class="card row" style="max-width:460px;margin-top:14px;justify-content:space-between">
+        <span class="item-meta">Using a shared phone or computer? Sign out when you're done.</span>
+        <button class="btn btn-bad" type="button" id="signOut2">Sign out</button>
+      </div>
+    </section>
 
     <!-- OVERVIEW -->
     <section data-panel="overview">
@@ -365,47 +386,70 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   }
 
   /* ---------- sign in ---------- */
-  var gateEmail = "";
   function gateMsg(text, kind) { $("gMsg").textContent = text; $("gMsg").className = "gate-msg " + (kind || ""); }
-  function showCodeStep(on) {
-    $("gEmailWrap").hidden = on; $("gCodeWrap").hidden = !on; $("gBack").hidden = !on;
-    $("gBtn").textContent = on ? "Sign in with code" : "Email me a sign-in link";
-    $("gateIntro").textContent = on ? "Check your email (and spam folder) for a message from Supabase. Tap its sign-in link on this device and you're in." : "Sign in with your email. We'll email you a sign-in link. No password needed.";
-    if (on) $("gCode").focus();
+  function gateEmail() {
+    var email = $("gEmail").value.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { gateMsg("Type a full email address.", "bad"); $("gEmail").focus(); return ""; }
+    return email;
   }
-  $("gBack").addEventListener("click", function () { showCodeStep(false); gateMsg(""); });
   $("gateForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    var btn = $("gBtn");
-    if ($("gCodeWrap").hidden) {
-      gateEmail = $("gEmail").value.trim().toLowerCase();
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(gateEmail)) { gateMsg("Type a full email address.", "bad"); return; }
-      btn.disabled = true; gateMsg("Sending…");
-      sb.auth.signInWithOtp({ email: gateEmail, options: { shouldCreateUser: true, emailRedirectTo: location.origin + location.pathname } }).then(function (res) {
-        btn.disabled = false;
-        if (res.error) {
-          gateMsg(/not allowed|signups|not found/i.test(res.error.message) ? "That email isn't set up as a Sosick admin." : /rate|seconds/i.test(res.error.message) ? "Too many tries. Wait a minute, then try again." : res.error.message, "bad");
-          return;
-        }
-        gateMsg("Sign-in email sent to " + gateEmail, "ok");
-        showCodeStep(true);
-      });
-    } else {
-      var code = $("gCode").value.replace(/\D/g, "");
-      if (code.length < 6) { gateMsg("Type the code from your email.", "bad"); return; }
-      btn.disabled = true; gateMsg("Checking…");
-      sb.auth.verifyOtp({ email: gateEmail, token: code, type: "email" }).then(function (res) {
-        btn.disabled = false;
-        if (res.error) { gateMsg("That code didn't work. Check it, or go back and send a new one.", "bad"); return; }
-        gateMsg("");
-      });
-    }
+    var email = gateEmail(); if (!email) return;
+    var pass = $("gPass").value;
+    if (!pass) { gateMsg("Type your passcode. First time here? Use the email link button below.", "bad"); $("gPass").focus(); return; }
+    var btn = $("gBtn"); btn.disabled = true; gateMsg("Checking…");
+    sb.auth.signInWithPassword({ email: email, password: pass }).then(function (res) {
+      btn.disabled = false;
+      if (res.error) {
+        gateMsg(/rate|too many|seconds/i.test(res.error.message) ? "Too many tries. Wait a few minutes, then try again." : "Email or passcode is wrong. Forgot it? Use the email link button below.", "bad");
+        $("gPass").value = "";
+        return;
+      }
+      $("gPass").value = ""; gateMsg("");
+    });
   });
-  $("signOut").addEventListener("click", function () { sb.auth.signOut(); });
+  // Backup route: first sign-in, or a forgotten passcode.
+  $("gLink").addEventListener("click", function () {
+    var email = gateEmail(); if (!email) return;
+    var btn = this; btn.disabled = true; gateMsg("Sending…");
+    sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true, emailRedirectTo: location.origin + location.pathname } }).then(function (res) {
+      btn.disabled = false;
+      if (res.error) { gateMsg(/rate|seconds/i.test(res.error.message) ? "Too many tries. Wait a minute, then try again." : res.error.message, "bad"); return; }
+      gateMsg("Sign-in link sent to " + email + ". Open it on this device (check spam too), then set your passcode in the Passcode tab.", "ok");
+    });
+  });
+  ["signOut", "signOut2"].forEach(function (id) { $(id).addEventListener("click", function () { sb.auth.signOut(); }); });
+
+  /* ---------- passcode ---------- */
+  function hasPasscode(user) { return !!(user && user.user_metadata && user.user_metadata.has_passcode); }
+  function paintPasscode(user) {
+    var set = hasPasscode(user);
+    $("passNudge").hidden = set;
+    $("passState").textContent = set ? "You have a passcode. Change it any time below." : "You don't have a passcode yet. Set one so you can sign in without waiting for an email.";
+    $("passBtn").textContent = set ? "Change passcode" : "Set passcode";
+  }
+  $("passForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var a = $("pass1").value, b = $("pass2").value;
+    if (a.length < 6) { $("passMsg").textContent = "Use at least 6 characters. Longer is safer."; return; }
+    if (/^(\d)\1+$/.test(a) || /^(012345|123456|234567|654321|111111|000000)/.test(a)) { $("passMsg").textContent = "That one is too easy to guess. Pick something less obvious."; return; }
+    if (a !== b) { $("passMsg").textContent = "The two passcodes don't match."; return; }
+    var btn = $("passBtn"); btn.disabled = true; $("passMsg").textContent = "Saving…";
+    sb.auth.updateUser({ password: a, data: { has_passcode: true } }).then(function (res) {
+      btn.disabled = false;
+      if (res.error) {
+        $("passMsg").textContent = /reauth|recent/i.test(res.error.message) ? "For safety, sign out and back in with the email link, then try again." : /same/i.test(res.error.message) ? "That's already your passcode." : "Couldn't save: " + res.error.message;
+        return;
+      }
+      $("pass1").value = ""; $("pass2").value = ""; $("passMsg").textContent = "";
+      paintPasscode(res.data.user); toast("Passcode saved. Use it next time you sign in");
+    });
+  });
 
   var started = false;
   sb.auth.onAuthStateChange(function (event, session) {
-    if (!session) { started = false; $("app").hidden = true; $("gate").hidden = false; showCodeStep(false); return; }
+    if (session && started) paintPasscode(session.user);
+    if (!session) { started = false; $("app").hidden = true; $("gate").hidden = false; return; }
     if (started) return;
     started = true;
     // Supabase advises not calling it from inside this callback directly, so defer a tick.
@@ -416,6 +460,8 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
         return;
       }
       $("whoami").textContent = session.user.email;
+      paintPasscode(session.user);
+      if (!hasPasscode(session.user)) showTab("passcode");
       $("gate").hidden = true; $("app").hidden = false;
       loadAll().then(checkOldLocalData).catch(function () {});
     }); }, 0);
@@ -455,6 +501,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     try { sessionStorage.setItem("sosick.tab", name); } catch (e) {}
   }
   $("tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (b) showTab(b.dataset.tab); });
+  document.addEventListener("click", function (e) { var g = e.target.closest("[data-goto]"); if (g) showTab(g.dataset.goto); });
 
   /* ---------- helpers ---------- */
   function sourceTag(o) { return o.source === "website" ? ' <span class="pill src-web">website</span>' : ""; }
