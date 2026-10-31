@@ -1,6 +1,6 @@
-# Sosick Thrifts
+# Sosick
 
-Pick up & delivery plus Verified Plugs for Nairobi. Run by **VosteyArts** (WhatsApp 0112 275 881).
+Pick up & delivery plus Verified Plugs for Nairobi. WhatsApp 0112 275 881.
 Plain HTML, CSS and JavaScript with no build step. It can be hosted free on GitHub Pages.
 
 ## What's where
@@ -13,11 +13,11 @@ Plain HTML, CSS and JavaScript with no build step. It can be hosted free on GitH
 | `assets/sosi.js` | Sosi, the chat helper (rule-based, no paid AI) |
 | `assets/style.css` | Yellow/black look |
 | `assets/logo.svg`, `favicon.svg` | Placeholder logo. Swap in the real one when it lands |
-| `admin/index.html` | VosteyArts' portal: orders, team, charges, plugs, backup |
+| `admin/index.html` | The owner's portal: orders, team, charges, plugs, backup |
 
 ## How it fits together
 
-- **Database:** Supabase, in VosteyArts' own account (project `esluujzrscwswxjehkrm`, region eu-west-1). `supabase/setup.sql` creates everything; put the owner's email in it before running.
+- **Database:** Supabase, in the owner's own account (project `esluujzrscwswxjehkrm`, region eu-west-1). `supabase/setup.sql` creates everything; put the owner's email in it before running.
 - **Website orders** open WhatsApp with the slip **and** drop a copy into the admin's Orders list, marked *website*.
 - **Verified Plugs:** add a seller in Admin → Verified Plugs, tick the five Sosick Test checks, press **Go live**. It shows on the website straight away. The database itself refuses "live" unless all five checks are ticked.
 - **Charges:** switch extras on in Admin → Charges. The website stops saying "no extra charges" by itself.

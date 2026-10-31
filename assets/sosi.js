@@ -1,8 +1,8 @@
-// Sosi: the Sosick Thrifts helper. A cheeky little shopping bag.
+// Sosi: the Sosick helper. A cheeky little shopping bag.
 // Rule-based (no paid AI yet): it reads keywords, keeps a tiny bit of
 // memory per chat, runs a guided order flow, searches Verified Plugs,
 // checks delivery areas and has two mini games. Everything it can't
-// handle goes to VosteyArts on WhatsApp.
+// handle goes to the Sosick team on WhatsApp.
 (function () {
   "use strict";
   var S = window.SOSICK, K = window.Sosick;
@@ -113,19 +113,19 @@
       return fees();
     }
     if (has(low, ["seller", "my shop", "list my", "get tested", "biashara", "i sell"]) || /i'm a seller|im a seller/.test(low)) {
-      return bot(t("Love that. Send VosteyArts your shop name and page. If you pass the Sosick Test, you get the badge and the spotlight.",
-        "Aaah boss wa biashara! 😎 Tuma shop name na page yako kwa VosteyArts. Ukipita Sosick Test, unapata badge na comrades wote wanakuona.") +
-        '<div class="msg-card">' + waBtn("Get my shop tested", "Hi VosteyArts! I'd like my shop tested for the Sosick Verified badge. Shop name:") + "</div>", ["🔌 Find a plug", "😂 Tell me a joke"]);
+      return bot(t("Love that. Send us your shop name and page. If you pass the Sosick Test, you get the badge and the spotlight.",
+        "Aaah boss wa biashara! 😎 Tuma shop name na page yako kwetu. Ukipita Sosick Test, unapata badge na comrades wote wanakuona.") +
+        '<div class="msg-card">' + waBtn("Get my shop tested", "Hi Sosick! I'd like my shop tested for the Sosick Verified badge. Shop name:") + "</div>", ["🔌 Find a plug", "😂 Tell me a joke"]);
     }
     if (has(low, ["job", "jobs", "work", "rider", "employ", "hire", "hiring", "kazi", "boda"])) {
-      return bot(t("Sosick is building its team: riders, plug testers and more. Send VosteyArts your name, area and what you'd love to do.",
-        "Unatafuta kazi? Respect 💪 Sosick inajenga team: riders, plug testers na wengine. Tuma jina, area na skill yako kwa VosteyArts.") +
-        '<div class="msg-card">' + waBtn("Apply on WhatsApp", "Hi VosteyArts! I'd like to work with Sosick Thrifts. Name: , Area: , Role I want: ") + "</div>", mainChips);
+      return bot(t("Sosick is building its team: riders, plug testers and more. Send us your name, area and what you'd love to do.",
+        "Unatafuta kazi? Respect 💪 Sosick inajenga team: riders, plug testers na wengine. Tuma jina, area na skill yako kwetu.") +
+        '<div class="msg-card">' + waBtn("Apply on WhatsApp", "Hi Sosick! I'd like to work with Sosick. Name: , Area: , Role I want: ") + "</div>", mainChips);
     }
     if (has(low, ["track", "where is my", "status", "iko wapi", "late"])) {
-      return bot(t("Live tracking is coming soon. For now, send your order code (it starts with SOS-) to VosteyArts and you'll get an update.",
-        "Tracking live inakuja soon 🔜. Kwa sasa, tuma order code yako (inaanza na SOS-) kwa VosteyArts, utapata update haraka.") +
-        '<div class="msg-card">' + waBtn("Ask about my order", "Hi VosteyArts! Checking on my order. Code: SOS-") + "</div>", mainChips);
+      return bot(t("Live tracking is coming soon. For now, send your order code (it starts with SOS-) to us and you'll get an update.",
+        "Tracking live inakuja soon 🔜. Kwa sasa, tuma order code yako (inaanza na SOS-) kwetu, utapata update haraka.") +
+        '<div class="msg-card">' + waBtn("Ask about my order", "Hi Sosick! Checking on my order. Code: SOS-") + "</div>", mainChips);
     }
     if (has(low, ["order", "deliver", "send", "pick", "pickup", "bring", "letea", "nileteeni", "buy for me", "errand"]) && !/do you deliver|mna deliver|you deliver to/.test(low)) {
       return startOrder(text, cat, place);
@@ -142,7 +142,7 @@
         "Every Verified Plug amepita <b>Sosick Test</b>: tunanunua kwa siri kama customer, tunacheck kama picha = kitu, bei ni honest, wanafika on time na wanasort issues. Ukifeli moja? Hakuna badge. Simple."
       ), ["🔌 Find a plug", "🏪 I'm a seller", "🛵 Order something"]);
     }
-    if (has(low, ["human", "person", "agent", "vostey", "vosteyarts", "owner", "boss", "call", "contact", "number", "whatsapp"])) {
+    if (has(low, ["human", "person", "agent", "owner", "boss", "call", "contact", "number", "whatsapp"])) {
       return humanHandoff();
     }
     if (has(low, ["joke", "funny", "bored", "laugh", "cheka"])) return joke();
@@ -156,13 +156,13 @@
       return bot(t("Later! Sosi will be right here bouncing. 🛍️", "Baadaye! Sosi atabaki hapa akiruka ruka 🛍️"));
     }
     if (/who are you|what are you|are you (a )?(bot|ai|robot|human)|wewe ni nani/.test(low)) {
-      return bot(t("I'm Sosi, Sosick's helper bot. I'm a friendly bag of rules, not a person. For real humans, VosteyArts is one tap away.",
-        "Mimi ni Sosi, helper bot wa Sosick. Sio mtu, ni bag yenye akili kidogo 😅 Ukitaka mtu halisi, VosteyArts yuko WhatsApp."), mainChips);
+      return bot(t("I'm Sosi, Sosick's helper bot. I'm a friendly bag of rules, not a person. For real humans, the Sosick team is one tap away.",
+        "Mimi ni Sosi, helper bot wa Sosick. Sio mtu, ni bag yenye akili kidogo 😅 Ukitaka mtu halisi, team ya Sosick iko WhatsApp."), mainChips);
     }
     if (place) return checkArea(low, place);
 
     bot(pick([
-      t("Hmm, I didn't catch that. Try one of these, or ask VosteyArts directly.", "Eish, hiyo imenipita kidogo 🙈 Jaribu moja ya hizi, ama uongee na VosteyArts direct."),
+      t("Hmm, I didn't catch that. Try one of these, or ask the Sosick team directly.", "Eish, hiyo imenipita kidogo 🙈 Jaribu moja ya hizi, ama uongee na team ya Sosick direct."),
       t("I'm still learning! Here's what I'm good at:", "Bado nasoma! 📚 Hizi ndio nazijua vizuri:"),
     ]), mainChips.concat(["🙋 Talk to a human"]));
   }
@@ -199,7 +199,7 @@
       var pl = K.findPlace(low);
       o.dropArea = pl || text;
       if (pl && S.campuses.indexOf(pl) !== -1) bot(t("Comrade spotted! 🎓", "Comrade ameonekana! 🎓 Respect."));
-      else if (!pl) bot(t("I don't have that area on my list yet, but VosteyArts will confirm if a rider can reach you.", "Hiyo area sina kwa list bado, but VosteyArts atakuconfirmia kama rider anafika."));
+      else if (!pl) bot(t("I don't have that area on my list yet, but we'll confirm if a rider can reach you.", "Hiyo area sina kwa list bado, but tutakuconfirmia kama rider anafika."));
     }
     else if (o.landmark === undefined) { o.landmark = /^skip$/i.test(text) ? "" : text; }
     else if (!o.name) { o.name = text.replace(/^(i'm|im|i am|my name is|naitwa|ni)\s+/i, ""); state.name = o.name.split(" ")[0]; }
@@ -218,8 +218,8 @@
     var msg = K.buildOrderMessage(o);
     state.mode = null;
     mood("happy");
-    bot(t("Done, " + K.esc(state.name || "friend") + "! Here's your slip. Tap send and it goes straight to VosteyArts. 🟡",
-      "Imeisha, " + K.esc(state.name || "boss") + "! 🔥 Hii hapa slip yako. Bonyeza send, inafika kwa VosteyArts direct. 🟡") +
+    bot(t("Done, " + K.esc(state.name || "friend") + "! Here's your slip. Tap send and it goes straight to the Sosick team. 🟡",
+      "Imeisha, " + K.esc(state.name || "boss") + "! 🔥 Hii hapa slip yako. Bonyeza send, inafika kwetu direct. 🟡") +
       '<div class="msg-card"><div class="mono">' + K.esc(msg) + "</div>" +
       '<a class="btn btn-ink btn-sm" href="' + K.esc(K.waLink(msg)) + '" target="_blank" rel="noopener">Send on WhatsApp</a></div>',
       ["✏️ Edit in the form", "🔌 Find a plug", "😂 Tell me a joke"]);
@@ -243,9 +243,9 @@
       return bot(t("Found " + hits.length + " verified plug" + (hits.length > 1 ? "s" : "") + " for " + K.esc(what) + ":", "Nimekupatia plug " + hits.length + " za " + K.esc(what) + " 🔌🔥") + cards,
         ["🛵 Order something", "🔌 Find a plug"]);
     }
-    bot(t("No verified plug for " + K.esc(what) + " yet. VosteyArts is still testing sellers. But we can hunt it down and deliver it to you!",
-      "Bado hatuna verified plug ya " + K.esc(what) + " 😤 VosteyArts bado anatest sellers. But tunaweza kukuwindia na kukuletea!") +
-      '<div class="msg-card">' + waBtn("Hunt it for me", "Hi VosteyArts! Please find me a solid plug for " + what + ". My area:") + "</div>",
+    bot(t("No verified plug for " + K.esc(what) + " yet. We're still testing sellers. But we can hunt it down and deliver it to you!",
+      "Bado hatuna verified plug ya " + K.esc(what) + " 😤 Bado tunatest sellers. But tunaweza kukuwindia na kukuletea!") +
+      '<div class="msg-card">' + waBtn("Hunt it for me", "Hi Sosick! Please find me a solid plug for " + what + ". My area:") + "</div>",
       ["🛵 Order something", "🏪 I'm a seller", "📍 Do you deliver to me?"]);
   }
 
@@ -263,18 +263,18 @@
   function fees() {
     var from = S.deliveryFeeFrom ? " (from KES " + Number(S.deliveryFeeFrom).toLocaleString("en-KE") + ")" : "";
     if (!S.extraFees) {
-      return bot(t("You pay for the item plus a <b>delivery fee</b>" + from + ". That's it: <b>no service fee, no extra charges</b>. VosteyArts confirms both prices on WhatsApp before pickup, so no surprises.",
-        "Unalipa bei ya kitu plus <b>delivery fee</b>" + from + ". Basi! <b>Hakuna service fee, hakuna extra charges</b> 💛 VosteyArts anakuconfirmia bei zote kwa WhatsApp kabla ya pickup, hakuna surprise."),
+      return bot(t("You pay for the item plus a <b>delivery fee</b>" + from + ". That's it: <b>no service fee, no extra charges</b>. We confirm both prices on WhatsApp before pickup, so no surprises.",
+        "Unalipa bei ya kitu plus <b>delivery fee</b>" + from + ". Basi! <b>Hakuna service fee, hakuna extra charges</b> 💛 Tunakuconfirmia bei zote kwa WhatsApp kabla ya pickup, hakuna surprise."),
         ["🛵 Order something", "🔌 Find a plug"]);
     }
-    bot(t("Delivery charges depend on distance. VosteyArts confirms the exact fee with you on WhatsApp before pickup, so there are no surprises.",
-      "Delivery fee inategemea distance. VosteyArts atakuambia fee exact kwa WhatsApp kabla ya pickup, hakuna surprise."), ["🛵 Order something"]);
+    bot(t("Delivery charges depend on distance. We confirm the exact fee with you on WhatsApp before pickup, so there are no surprises.",
+      "Delivery fee inategemea distance. Tutakuambia fee exact kwa WhatsApp kabla ya pickup, hakuna surprise."), ["🛵 Order something"]);
   }
 
   function humanHandoff() {
-    bot(t("VosteyArts runs Sosick Thrifts. Message him on WhatsApp: <b>" + S.whatsappDisplay + "</b>",
-      "VosteyArts ndiye boss wa Sosick 😎 Mshtue WhatsApp: <b>" + S.whatsappDisplay + "</b>") +
-      '<div class="msg-card">' + waBtn("Chat with VosteyArts", "Hi VosteyArts! I was chatting with Sosi and ") + "</div>", mainChips);
+    bot(t("Talk to the Sosick team on WhatsApp: <b>" + S.whatsappDisplay + "</b>",
+      "Team ya Sosick iko ready 😎 Tushtue WhatsApp: <b>" + S.whatsappDisplay + "</b>") +
+      '<div class="msg-card">' + waBtn("Chat with Sosick", "Hi Sosick! I was chatting with Sosi and ") + "</div>", mainChips);
   }
 
   /* ---------------- fun ---------------- */
@@ -401,8 +401,8 @@
       opened = true;
       var hour = new Date().getHours();
       var greet = hour < 12 ? t("Good morning", "Morning boss") : hour < 17 ? t("Good afternoon", "Sasa") : t("Good evening", "Niaje, evening vibes");
-      bot(greet + "! " + t("I'm <b>Sosi</b>, the Sosick Thrifts helper. 🛍️ I can take your order, find you a verified plug, check if we reach your area, or entertain you. What's up?",
-        "Mimi ni <b>Sosi</b>, bag ya Sosick Thrifts 🛍️ Naweza kukuchukulia order, kukutafutia verified plug, kucheck kama tunafika kwako, ama kukuchekesha tu. Sema!"),
+      bot(greet + "! " + t("I'm <b>Sosi</b>, the Sosick helper. 🛍️ I can take your order, find you a verified plug, check if we reach your area, or entertain you. What's up?",
+        "Mimi ni <b>Sosi</b>, bag ya Sosick 🛍️ Naweza kukuchukulia order, kukutafutia verified plug, kucheck kama tunafika kwako, ama kukuchekesha tu. Sema!"),
         intent === "order" ? null : mainChips);
     }
     if (intent === "order") startOrder("", null, null);

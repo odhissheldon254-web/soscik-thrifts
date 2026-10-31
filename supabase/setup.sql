@@ -1,8 +1,8 @@
--- Sosick Thrifts database. Run once in Supabase → SQL Editor.
+-- Sosick database. Run once in Supabase → SQL Editor.
 -- Safe to re-run: it only creates what's missing and resets the policies.
 --
 -- Who can do what:
---   • VosteyArts (emails in public.admins) can read and change everything.
+--   • The owner (emails in public.admins) can read and change everything.
 --   • Anyone (the public website) can: read live Verified Plugs, read which
 --     charges are switched on, and drop a new order in (but never read orders).
 
@@ -76,7 +76,7 @@ insert into public.charges (id, label, hint, unit, amount, is_on, always_on, sel
   ('night',     'Late-night fee',             'Orders after 9pm',                                              'KES',      80,  false, false, false, 5),
   ('featured',  'Featured plug spot',         'Shows first in its category (per week)',                        'KES/wk',   300, false, false, true,  6),
   ('spotlight', 'Homepage spotlight',         'Big card at the top of Verified Plugs (per week)',              'KES/wk',   500, false, false, true,  7),
-  ('promo',     'Sosick promo post',          'VosteyArts posts the plug on Sosick''s socials (per post)',     'KES/post', 400, false, false, true,  8),
+  ('promo',     'Sosick promo post',          'Sosick posts the plug on its socials (per post)',     'KES/post', 400, false, false, true,  8),
   ('listing',   'Monthly plug listing',       'Keeps a verified plug listed. The badge itself is always earned, never sold', 'KES/mo', 200, false, false, true, 9)
 on conflict (id) do nothing;
 

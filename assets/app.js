@@ -1,4 +1,4 @@
-// Sosick Thrifts: page behaviour (order slip, plugs, areas).
+// Sosick: page behaviour (order slip, plugs, areas).
 // Shared helpers hang off window.Sosick so Sosi (sosi.js) can reuse them.
 (function () {
   "use strict";
@@ -215,7 +215,7 @@
 
   /* ---------------- WhatsApp links ---------------- */
   document.querySelectorAll(".wa-link").forEach(function (a) {
-    a.href = waLink(a.getAttribute("data-wa") || "Hi Sosick Thrifts");
+    a.href = waLink(a.getAttribute("data-wa") || "Hi Sosick");
   });
   document.querySelectorAll(".wa-number").forEach(function (el) { el.textContent = S.whatsappDisplay; });
 
@@ -285,10 +285,10 @@
     if (list.length) { grid.innerHTML = list.map(plugCard).join(""); return; }
 
     var hunting = q.trim() || (activeCat !== "all" ? catLabel(activeCat) : "");
-    var huntMsg = "Hi VosteyArts! I'm looking for a solid plug for " + (hunting || "something") + ". Can Sosick find one for me?";
+    var huntMsg = "Hi Sosick! I'm looking for a solid plug for " + (hunting || "something") + ". Can Sosick find one for me?";
     var title = S.plugs.length === 0 ? "First plugs drop soon" : "No verified plug for that yet";
     var body = S.plugs.length === 0
-      ? "VosteyArts is putting Nairobi sellers through the Sosick Test right now. Only the ones that pass get listed here."
+      ? "We're putting Nairobi sellers through the Sosick Test right now. Only the ones that pass get listed here."
       : "We haven't tested a seller for " + esc(hunting) + " yet.";
     grid.innerHTML =
       '<div class="empty-plugs"><h3>' + title + "</h3><p>" + body +
@@ -298,7 +298,7 @@
       "<h3>Your shop could be here</h3>" +
       '<div class="plug-meta">Any category · Nairobi</div>' +
       "<p>Sell honest stuff? Let us test you. Pass the Sosick Test and comrades across Nairobi find you here.</p>" +
-      '<div class="plug-actions"><a class="btn btn-sun btn-sm" href="' + esc(waLink("Hi VosteyArts! I'd like my shop tested for the Sosick Verified badge. Shop name:")) + '" target="_blank" rel="noopener">Get tested</a></div></article>';
+      '<div class="plug-actions"><a class="btn btn-sun btn-sm" href="' + esc(waLink("Hi Sosick! I'd like my shop tested for the Sosick Verified badge. Shop name:")) + '" target="_blank" rel="noopener">Get tested</a></div></article>';
   }
 
   var chipsHtml = '<button type="button" data-cat="all" aria-pressed="true">All</button>' +

@@ -1,24 +1,23 @@
-// Sosick Thrifts: everything the public site reads lives here.
+// Sosick: everything the public site reads lives here.
 // Change a value, save, refresh. No other file needs touching.
 window.SOSICK = {
-  brand: "Sosick Thrifts",
-  owner: "VosteyArts",
+  brand: "Sosick",
   whatsapp: "254112275881",        // international format for wa.me links
   whatsappDisplay: "0112 275 881", // how it shows on the page
   city: "Nairobi",
 
-  // Supabase (VosteyArts' own account). This key is the PUBLIC one; it is
+  // Supabase (the owner's own account). This key is the PUBLIC one; it is
   // meant to be in the website. Database rules decide what it can do.
   supabaseUrl: "https://esluujzrscwswxjehkrm.supabase.co",
   supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHV1anpyc2N3c3d4amVoa3JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NzgyODIsImV4cCI6MjEwODQ1NDI4Mn0.sSMmIE7bRZX3EXCRZnrG6HCS4BZRGeTev99EExuigSI",
 
-  // Delivery is always charged. Put the starting price here once VosteyArts
+  // Delivery is always charged. Put the starting price here once the owner
   // settles it (e.g. 150) and the site shows "from KES 150". Leave null to
   // just say the fee is confirmed on WhatsApp.
   deliveryFeeFrom: null,
 
   // Extra charges (service fee, rush, late-night, per km) stay off until
-  // VosteyArts switches them on in the admin. Then set this to true so the
+  // the owner switches them on in the admin. Then set this to true so the
   // site stops saying "no extra charges".
   extraFees: false,
 
