@@ -72,7 +72,7 @@
     return '<a class="btn btn-ink btn-sm" href="' + K.esc(K.waLink(text)) + '" target="_blank" rel="noopener">' + K.esc(label) + "</a>";
   }
 
-  var mainChips = ["🛵 Order something", "🔌 Find a plug", "📍 Do you deliver to me?", "💸 Charges?", "🎲 Fit dice", "🤝 Haggle game"];
+  var mainChips = ["Order something", "Find a plug", "Do you deliver to me?", "Charges?", "Fit dice", "Haggle game"];
 
   /* ---------------- brain ---------------- */
   function has(text, words) {
@@ -115,7 +115,7 @@
     if (has(low, ["seller", "my shop", "list my", "get tested", "biashara", "i sell"]) || /i'm a seller|im a seller/.test(low)) {
       return bot(t("Love that. Send us your shop name and page. If you pass the Sosick Test, you get the badge and the spotlight.",
         "Aaah boss wa biashara! 😎 Tuma shop name na page yako kwetu. Ukipita Sosick Test, unapata badge na comrades wote wanakuona.") +
-        '<div class="msg-card">' + waBtn("Get my shop tested", "Hi Sosick! I'd like my shop tested for the Sosick Verified badge. Shop name:") + "</div>", ["🔌 Find a plug", "😂 Tell me a joke"]);
+        '<div class="msg-card">' + waBtn("Get my shop tested", "Hi Sosick! I'd like my shop tested for the Sosick Verified badge. Shop name:") + "</div>", ["Find a plug", "Tell me a joke"]);
     }
     if (has(low, ["job", "jobs", "work", "rider", "employ", "hire", "hiring", "kazi", "boda"])) {
       return bot(t("Sosick is building its team: riders, plug testers and more. Send us your name, area and what you'd love to do.",
@@ -140,7 +140,7 @@
       return bot(t(
         "Every Verified Plug passed the <b>Sosick Test</b>: we buy from them in secret, check the item matches the photos, check the price is honest, time the delivery and see how they handle problems. Fail one check and there's no badge.",
         "Every Verified Plug amepita <b>Sosick Test</b>: tunanunua kwa siri kama customer, tunacheck kama picha = kitu, bei ni honest, wanafika on time na wanasort issues. Ukifeli moja? Hakuna badge. Simple."
-      ), ["🔌 Find a plug", "🏪 I'm a seller", "🛵 Order something"]);
+      ), ["Find a plug", "I'm a seller", "Order something"]);
     }
     if (has(low, ["human", "person", "agent", "owner", "boss", "call", "contact", "number", "whatsapp"])) {
       return humanHandoff();
@@ -164,7 +164,7 @@
     bot(pick([
       t("Hmm, I didn't catch that. Try one of these, or ask the Sosick team directly.", "Eish, hiyo imenipita kidogo 🙈 Jaribu moja ya hizi, ama uongee na team ya Sosick direct."),
       t("I'm still learning! Here's what I'm good at:", "Bado nasoma! 📚 Hizi ndio nazijua vizuri:"),
-    ]), mainChips.concat(["🙋 Talk to a human"]));
+    ]), mainChips.concat(["Talk to a human"]));
   }
 
   /* ---------------- order flow ---------------- */
@@ -222,7 +222,7 @@
       "Imeisha, " + K.esc(state.name || "boss") + "! 🔥 Hii hapa slip yako. Bonyeza send, inafika kwetu direct. 🟡") +
       '<div class="msg-card"><div class="mono">' + K.esc(msg) + "</div>" +
       '<a class="btn btn-ink btn-sm" href="' + K.esc(K.waLink(msg)) + '" target="_blank" rel="noopener">Send on WhatsApp</a></div>',
-      ["✏️ Edit in the form", "🔌 Find a plug", "😂 Tell me a joke"]);
+      ["Edit in the form", "Find a plug", "Tell me a joke"]);
     state.lastOrder = o;
   }
 
@@ -241,23 +241,23 @@
           (p.link ? '<a class="btn btn-ink btn-sm" href="' + K.esc(p.link) + '" target="_blank" rel="noopener">Visit their page</a>' : "") + "</div>";
       }).join("");
       return bot(t("Found " + hits.length + " verified plug" + (hits.length > 1 ? "s" : "") + " for " + K.esc(what) + ":", "Nimekupatia plug " + hits.length + " za " + K.esc(what) + " 🔌🔥") + cards,
-        ["🛵 Order something", "🔌 Find a plug"]);
+        ["Order something", "Find a plug"]);
     }
     bot(t("No verified plug for " + K.esc(what) + " yet. We're still testing sellers. But we can hunt it down and deliver it to you!",
       "Bado hatuna verified plug ya " + K.esc(what) + " 😤 Bado tunatest sellers. But tunaweza kukuwindia na kukuletea!") +
       '<div class="msg-card">' + waBtn("Hunt it for me", "Hi Sosick! Please find me a solid plug for " + what + ". My area:") + "</div>",
-      ["🛵 Order something", "🏪 I'm a seller", "📍 Do you deliver to me?"]);
+      ["Order something", "I'm a seller", "Do you deliver to me?"]);
   }
 
   function checkArea(low, place) {
     var soon = S.nextCities.filter(function (c) { return low.indexOf(c.toLowerCase()) !== -1; })[0];
-    if (!place && soon) return bot(t(soon + " is next on our list! We're starting in Nairobi and going countrywide soon. 🇰🇪", soon + " iko next kwa list! Tunaanza Nairobi, then countrywide soon 🇰🇪"), ["🛵 Order something", "🙋 Talk to a human"]);
+    if (!place && soon) return bot(t(soon + " is next on our list! We're starting in Nairobi and going countrywide soon. 🇰🇪", soon + " iko next kwa list! Tunaanza Nairobi, then countrywide soon 🇰🇪"), ["Order something", "Talk to a human"]);
     if (!place) return bot(t("Which area or campus are you in?", "Uko area gani ama campus gani?"), ["Chiromo", "KU", "Kilimani", "Rongai", "Kitengela"]);
     var campus = S.campuses.indexOf(place) !== -1;
     mood("happy");
     bot(t("Yes! " + K.esc(place) + " is in our Nairobi launch zone. " + (campus ? "Comrades get first-class treatment. 🎓" : ""),
       "Ndio sana! " + K.esc(place) + " iko kwa launch zone yetu. " + (campus ? "Comrades tunawapenda sana 🎓💛" : "Tunafika bila stress.")),
-      ["🛵 Order something", "💸 Charges?"]);
+      ["Order something", "Charges?"]);
   }
 
   function fees() {
@@ -265,10 +265,10 @@
     if (!S.extraFees) {
       return bot(t("You pay for the item plus a <b>delivery fee</b>" + from + ". That's it: <b>no service fee, no extra charges</b>. We confirm both prices on WhatsApp before pickup, so no surprises.",
         "Unalipa bei ya kitu plus <b>delivery fee</b>" + from + ". Basi! <b>Hakuna service fee, hakuna extra charges</b> 💛 Tunakuconfirmia bei zote kwa WhatsApp kabla ya pickup, hakuna surprise."),
-        ["🛵 Order something", "🔌 Find a plug"]);
+        ["Order something", "Find a plug"]);
     }
     bot(t("Delivery charges depend on distance. We confirm the exact fee with you on WhatsApp before pickup, so there are no surprises.",
-      "Delivery fee inategemea distance. Tutakuambia fee exact kwa WhatsApp kabla ya pickup, hakuna surprise."), ["🛵 Order something"]);
+      "Delivery fee inategemea distance. Tutakuambia fee exact kwa WhatsApp kabla ya pickup, hakuna surprise."), ["Order something"]);
   }
 
   function humanHandoff() {
@@ -288,7 +288,7 @@
   function joke() {
     var j = pick(jokes);
     mood("happy");
-    bot(t(j[0], j[1]), ["😂 Another one", "🎲 Fit dice", "🛵 Order something"]);
+    bot(t(j[0], j[1]), ["Another one", "Fit dice", "Order something"]);
   }
 
   var tops = ["oversized vintage tee", "boxy denim jacket", "90s windbreaker", "plain white tee", "flannel shirt", "cropped hoodie", "graphic band tee", "knit sweater vest"];
@@ -299,9 +299,9 @@
   function fitDice() {
     var fit = [pick(tops), pick(bottoms), pick(shoes), pick(extras)];
     mood("happy");
-    bot(t("🎲 Rolling… your fit: ", "🎲 Narusha dice… fit yako ni: ") +
+    bot(t("Rolling… your fit: ", "Narusha dice… fit yako ni: ") +
       '<div class="msg-card"><b>' + pick(vibes) + "</b><span>👕 " + fit[0] + "<br>👖 " + fit[1] + "<br>👟 " + fit[2] + "<br>✨ " + fit[3] + "</span></div>" +
-      t("Want us to hunt any of these pieces for you?", "Tukuwindie kimoja ya hizi?"), ["🎲 Roll again", "🛵 Order something", "🔌 Find a plug"]);
+      t("Want us to hunt any of these pieces for you?", "Tukuwindie kimoja ya hizi?"), ["Roll again", "Order something", "Find a plug"]);
   }
 
   // Haggle game: pure fun, nothing here is a real price or a real discount.
@@ -315,8 +315,8 @@
     var it = pick(haggleItems);
     var floor = Math.round(it.ask * (0.55 + Math.random() * 0.15) / 50) * 50;
     state.game = { item: it, price: it.ask, floor: floor, rounds: 0, patience: 100 };
-    bot(t("🤝 <b>HAGGLE GAME</b> (just for fun, no real prices!)<br>I'm a tough Gikomba seller. Item: <b>" + it.name + "</b>. My price: <b>KES " + it.ask.toLocaleString() + "</b>. Make me an offer. Go too low and I'll walk away. You get 5 rounds.",
-      "🤝 <b>HAGGLE GAME</b> (ni mchezo tu, sio bei za kweli!)<br>Mimi ni seller mgumu wa Gikomba 😤 Kitu: <b>" + it.name + "</b>. Bei yangu: <b>KES " + it.ask.toLocaleString() + "</b>. Nipe offer yako. Ukinitusi na bei ya chini sana, naenda. Una rounds 5.") +
+    bot(t("<b>HAGGLE GAME</b> (just for fun, no real prices!)<br>I'm a tough Gikomba seller. Item: <b>" + it.name + "</b>. My price: <b>KES " + it.ask.toLocaleString() + "</b>. Make me an offer. Go too low and I'll walk away. You get 5 rounds.",
+      "<b>HAGGLE GAME</b> (ni mchezo tu, sio bei za kweli!)<br>Mimi ni seller mgumu wa Gikomba 😤 Kitu: <b>" + it.name + "</b>. Bei yangu: <b>KES " + it.ask.toLocaleString() + "</b>. Nipe offer yako. Ukinitusi na bei ya chini sana, naenda. Una rounds 5.") +
       meterHtml(100), ["KES " + Math.round(it.ask * 0.5), "KES " + Math.round(it.ask * 0.7), "Quit game"]);
   }
   function meterHtml(p) {
@@ -331,25 +331,25 @@
     if (n >= g.price) {
       state.game = null; mood("happy");
       return bot(t("Deal at KES " + g.price.toLocaleString() + "… wait, you offered MORE than my price? 😂 Easiest customer ever. Score: 0/10 haggle skills.",
-        "Deal! Lakini ulikuwa unanipea zaidi ya bei yangu? 😂 Customer rahisi kabisa. Score: 0/10 kwa haggle."), ["🤝 Play again", "🛵 Order something"]);
+        "Deal! Lakini ulikuwa unanipea zaidi ya bei yangu? 😂 Customer rahisi kabisa. Score: 0/10 kwa haggle."), ["Play again", "Order something"]);
     }
     if (n < g.floor * 0.6) g.patience -= 45; else if (n < g.floor) g.patience -= 22; else g.patience -= 8;
     if (g.patience <= 0) {
       state.game = null;
       return bot(t("That's it, I'm closing my stall! 🙄 You pushed too hard. Tip: start at about 60% of the asking price.",
-        "Nimefunga duka! 🙄 Umeniumiza roho. Tip: anza karibu 60% ya bei. Jaribu tena?") + meterHtml(0), ["🤝 Play again", "😂 Tell me a joke"]);
+        "Nimefunga duka! 🙄 Umeniumiza roho. Tip: anza karibu 60% ya bei. Jaribu tena?") + meterHtml(0), ["Play again", "Tell me a joke"]);
     }
     if (n >= g.floor) {
       var score = Math.max(1, Math.min(10, Math.round(10 * (g.item.ask - n) / (g.item.ask - g.floor) * 0.8 + (5 - g.rounds))));
       state.game = null; mood("happy");
       return bot(t("Sawa sawa! DEAL at <b>KES " + n.toLocaleString() + "</b> in " + g.rounds + " round" + (g.rounds > 1 ? "s" : "") + ". Haggle score: <b>" + score + "/10</b> 🏆<br><small>Real thrift prices are set by our Verified Plugs. This was just a game!</small>",
         "Haya basi! DEAL kwa <b>KES " + n.toLocaleString() + "</b> ndani ya rounds " + g.rounds + ". Haggle score: <b>" + score + "/10</b> 🏆<br><small>Bei za kweli ziko kwa Verified Plugs. Hii ilikuwa mchezo tu!</small>"),
-        ["🤝 Play again", "🔌 Find a plug", "🛵 Order something"]);
+        ["Play again", "Find a plug", "Order something"]);
     }
     if (g.rounds >= 5) {
       state.game = null;
       return bot(t("Out of rounds! I'm keeping my jacket. 😤 My lowest was KES " + g.floor.toLocaleString() + ".",
-        "Rounds zimeisha! Jacket nabaki nayo 😤 Ningekubali KES " + g.floor.toLocaleString() + "."), ["🤝 Play again", "😂 Tell me a joke"]);
+        "Rounds zimeisha! Jacket nabaki nayo 😤 Ningekubali KES " + g.floor.toLocaleString() + "."), ["Play again", "Tell me a joke"]);
     }
     g.price = Math.max(g.floor, Math.round((g.price - (g.price - Math.max(n, g.floor)) * 0.35) / 50) * 50);
     bot(pick([
@@ -362,17 +362,17 @@
   /* ---------------- chips that need special handling ---------------- */
   function userSays(raw) {
     var map = {
-      "🛵 Order something": "I want to order",
-      "🔌 Find a plug": "find a plug",
-      "📍 Do you deliver to me?": "do you deliver to",
-      "💸 Charges?": "charges",
-      "🎲 Fit dice": "fit dice", "🎲 Roll again": "fit dice",
-      "🤝 Haggle game": "haggle", "🤝 Play again": "haggle",
-      "😂 Tell me a joke": "joke", "😂 Another one": "joke",
-      "🏪 I'm a seller": "i'm a seller",
-      "🙋 Talk to a human": "human",
+      "Order something": "I want to order",
+      "Find a plug": "find a plug",
+      "Do you deliver to me?": "do you deliver to",
+      "Charges?": "charges",
+      "Fit dice": "fit dice", "Roll again": "fit dice",
+      "Haggle game": "haggle", "Play again": "haggle",
+      "Tell me a joke": "joke", "Another one": "joke",
+      "I'm a seller": "i'm a seller",
+      "Talk to a human": "human",
     };
-    if (raw === "✏️ Edit in the form") {
+    if (raw === "Edit in the form") {
       bubble(K.esc(raw), "me");
       K.fillOrderForm(state.lastOrder || {});
       close();
@@ -439,12 +439,12 @@
   });
 
   // A gentle nudge bubble that changes now and then, then hides.
-  var nudges = ["Niaje! Need something? 👀", "No plug? I got you 🔌", "Wanna haggle? 🤝", "No extra charges, comrade 💛"];
+  var nudges = ["Niaje! Need something?", "No plug? I can help", "Fancy a haggle game?", "Ask me about delivery"];
   var ni = 0;
   var nudgeTimer = setInterval(function () {
     if (opened) { clearInterval(nudgeTimer); return; }
     ni = (ni + 1) % nudges.length;
-    $("sosiNudge").textContent = sheng ? nudges[ni] : ["Need something?", "No plug? I can help", "Fancy a haggle game?", "No extra charges, just delivery"][ni];
+    $("sosiNudge").textContent = sheng ? nudges[ni] : ["Need something?", "No plug? I can help", "Fancy a haggle game?", "Ask me about delivery"][ni];
   }, 6000);
   setTimeout(function () { $("sosiNudge").classList.add("is-gone"); clearInterval(nudgeTimer); }, 45000);
 })();
