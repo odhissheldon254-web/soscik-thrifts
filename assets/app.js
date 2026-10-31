@@ -67,7 +67,7 @@
 
   var feeText = S.deliveryFeeFrom ? "from KES " + Number(S.deliveryFeeFrom).toLocaleString("en-KE") : "confirmed on WhatsApp";
   $("feeLine").innerHTML = "Delivery fee: <strong>" + esc(feeText) + "</strong> before pickup." + (S.extraFees ? "" : " No extra charges.");
-  if (S.extraFees) $("comradeSticker").textContent = "Delivering across Nairobi.";
+  if (S.extraFees) $("comradeSticker").textContent = "Now delivering across Nairobi";
 
   $("placesList").innerHTML = allPlaces.map(function (p) {
     return '<option value="' + esc(p) + '"></option>';
@@ -198,7 +198,7 @@
     S.extraFees = rows.some(function (c) { return c.is_on && c.id !== "base"; });
     var feeText = S.deliveryFeeFrom ? "from KES " + Number(S.deliveryFeeFrom).toLocaleString("en-KE") : "confirmed on WhatsApp";
     $("feeLine").innerHTML = "Delivery fee: <strong>" + esc(feeText) + "</strong> before pickup." + (S.extraFees ? "" : " No extra charges.");
-    $("comradeSticker").textContent = S.extraFees ? "Delivering across Nairobi." : "Just a delivery fee, no extra charges.";
+    $("comradeSticker").textContent = S.extraFees ? "Now delivering across Nairobi" : "Comrade launch · just delivery, no extra charges";
   }
 
   function loadLive() {
@@ -220,6 +220,9 @@
   document.querySelectorAll(".wa-number").forEach(function (el) { el.textContent = S.whatsappDisplay; });
 
   /* ---------------- ticker + areas ---------------- */
+  var tickerWords = ["Pick up", "Delivery", "Verified Plugs"].concat(S.campuses.slice(0, 6), S.areas.slice(0, 14));
+  var tick = tickerWords.map(function (w) { return "<span>" + esc(w) + "</span>"; }).join("");
+  $("ticker").innerHTML = tick + tick; // doubled so the loop is seamless
 
   function pills(list) { return list.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join(""); }
   $("campusList").innerHTML = pills(S.campuses);
@@ -230,9 +233,9 @@
   /* ---------------- verified plugs ---------------- */
   var activeCat = "all";
   var badgeHtml = {
-    verified: '<span class="badge badge-verified">Verified</span>',
-    trusted: '<span class="badge badge-trusted">Trusted</span>',
-    top: '<span class="badge badge-top">Top Plug</span>',
+    verified: '<span class="badge badge-verified">✓ Verified</span>',
+    trusted: '<span class="badge badge-trusted">★ Trusted</span>',
+    top: '<span class="badge badge-top">♛ Top Plug</span>',
   };
   function catLabel(id) {
     var c = S.categories.filter(function (c) { return c.id === id; })[0];
@@ -283,14 +286,19 @@
 
     var hunting = q.trim() || (activeCat !== "all" ? catLabel(activeCat) : "");
     var huntMsg = "Hi Sosick! I'm looking for a solid plug for " + (hunting || "something") + ". Can Sosick find one for me?";
-    var title = S.plugs.length === 0 ? "No sellers listed yet" : "No verified seller for " + esc(hunting) + " yet";
+    var title = S.plugs.length === 0 ? "First plugs drop soon" : "No verified plug for that yet";
     var body = S.plugs.length === 0
-      ? "We're testing Nairobi sellers now. They appear here once they pass all five checks."
-      : "We haven't tested one yet.";
+      ? "We're putting Nairobi sellers through the Sosick Test right now. Only the ones that pass get listed here."
+      : "We haven't tested a seller for " + esc(hunting) + " yet.";
     grid.innerHTML =
       '<div class="empty-plugs"><h3>' + title + "</h3><p>" + body +
-      " Tell us what you're after and we'll find it and deliver it.</p>" +
-      '<a class="btn btn-sun" href="' + esc(waLink(huntMsg)) + '" target="_blank" rel="noopener">Ask us to find ' + (hunting ? esc(hunting) : "it") + "</a></div>";
+      " Need it today? We'll hunt it down and deliver it.</p>" +
+      '<a class="btn btn-sun" href="' + esc(waLink(huntMsg)) + '" target="_blank" rel="noopener">Ask Sosick to find ' + (hunting ? esc(hunting) : "it") + "</a></div>" +
+      '<article class="plug plug-sample"><span class="badge badge-verified">✓ Verified</span>' +
+      "<h3>Your shop could be here</h3>" +
+      '<div class="plug-meta">Any category · Nairobi</div>' +
+      "<p>Sell honest stuff? Let us test you. Pass the Sosick Test and comrades across Nairobi find you here.</p>" +
+      '<div class="plug-actions"><a class="btn btn-sun btn-sm" href="' + esc(waLink("Hi Sosick! I'd like my shop tested for the Sosick Verified badge. Shop name:")) + '" target="_blank" rel="noopener">Get tested</a></div></article>';
   }
 
   var chipsHtml = '<button type="button" data-cat="all" aria-pressed="true">All</button>' +

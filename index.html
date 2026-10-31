@@ -26,76 +26,80 @@
       <a href="#how">How it works</a>
       <a href="#areas">Areas</a>
     </nav>
-    <a class="btn btn-ink btn-sm wa-link" data-wa="Hi Sosick" href="#" target="_blank" rel="noopener">WhatsApp us</a>
+    <a class="btn btn-ink btn-sm wa-link" data-wa="Hi Sosick 👋" href="#" target="_blank" rel="noopener">WhatsApp us</a>
   </div>
 </header>
 
 <main id="top">
 
+  <!-- HERO: the two engines side by side, equal weight -->
   <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <h1 class="hero-title">Order it.<br>We pick it.<br><span class="hl">We drop it.</span></h1>
-        <p class="hero-sub">Tell us what you want from any shop or market in Nairobi. A rider collects it and brings it to your gate, hostel or office. You pay when it arrives.</p>
-        <p class="hero-note" id="comradeSticker">Just a delivery fee, no extra charges.</p>
-      </div>
-      <nav class="hero-paths" aria-label="Get started">
-        <a class="path" href="#order">
-          <span class="path-name">Pick up &amp; delivery</span>
-          <span class="path-copy">Send us the item and your location. We confirm the price on WhatsApp before anyone moves.</span>
-          <span class="path-go" aria-hidden="true">→</span>
-        </a>
-        <a class="path" href="#plugs">
-          <span class="path-name">Verified Plugs</span>
-          <span class="path-copy">Sellers we've bought from ourselves. If a seller slips, the badge comes off.</span>
-          <span class="path-go" aria-hidden="true">→</span>
-        </a>
-      </nav>
+    <div class="wrap">
+      <p class="sticker" id="comradeSticker">Comrade launch · just delivery, no extra charges</p>
+      <h1 class="hero-title">Order it.<br>We pick it.<br><span class="hl">We drop it.</span></h1>
+      <p class="hero-sub">From any shop in Nairobi to your gate, hostel or office. Can't find a plug for what you want? Shop from sellers we've tested ourselves.</p>
+    </div>
+    <div class="wrap engines">
+      <a class="engine engine-sun" href="#order">
+        <span class="engine-tag">Engine 01</span>
+        <span class="engine-name">Pick Up &amp; Delivery</span>
+        <span class="engine-copy">Tell us what you need and where you are. A Sosick rider picks it up and brings it to you.</span>
+        <span class="engine-go">Place an order →</span>
+      </a>
+      <a class="engine engine-ink" href="#plugs">
+        <span class="engine-tag">Engine 02</span>
+        <span class="engine-name">Verified Plugs</span>
+        <span class="engine-copy">Need jeans but no plug? Every seller here has been tested by us before getting the badge.</span>
+        <span class="engine-go">Find a plug →</span>
+      </a>
     </div>
   </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
 
   <!-- ORDER -->
   <section class="band band-paper" id="order">
     <div class="wrap order-grid">
       <div class="order-intro">
-        <h2 class="h2">What do you need?</h2>
-        <p class="lede">Fill this in and WhatsApp opens with your order already written. We reply with the price, then a rider heads out.</p>
+        <p class="eyebrow">Pick up &amp; delivery</p>
+        <h2 class="h2">Tell us what<br>you need.</h2>
+        <p class="lede">Fill this in and it opens WhatsApp with your order already written. We confirm, and a rider heads out.</p>
         <ul class="ticks">
           <li>Any shop, market stall or Verified Plug</li>
-          <li>Pay by M-Pesa or cash on delivery</li>
+          <li>Pay with M-Pesa or cash when it arrives</li>
           <li>You get an order code to follow up with</li>
         </ul>
-        <p class="note">Rather chat? <button class="linkish" type="button" data-open-sosi="order">Ask Sosi to fill it in for you</button>.</p>
+        <p class="note">Rather chat? <button class="linkish" type="button" data-open-sosi="order">Ask Sosi to fill it for you</button>.</p>
       </div>
 
       <form class="ticket" id="orderForm" novalidate>
         <div class="ticket-head">
-          <span>Order slip</span>
+          <span>SOSICK ORDER SLIP</span>
           <span class="mono" id="orderCode">SOS-0000</span>
         </div>
 
         <div class="field">
-          <label for="item">Item</label>
-          <textarea id="item" rows="2" placeholder="e.g. Black baggy jeans, size 32 — or my parcel at Easy Coach" required></textarea>
+          <label for="item">What do you need?</label>
+          <textarea id="item" rows="2" placeholder="e.g. Black baggy jeans size 32, or pick my parcel from Easy Coach" required></textarea>
         </div>
 
         <div class="field">
-          <label for="pickup">Pick up from <span class="opt">optional</span></label>
-          <input id="pickup" type="text" list="placesList" placeholder="Shop, market or area. Leave blank and we'll find it" autocomplete="off">
+          <label for="pickup">Where do we pick it from?</label>
+          <input id="pickup" type="text" list="placesList" placeholder="Shop name, market or area. Leave blank if you want us to find it" autocomplete="off">
         </div>
 
         <div class="row2">
           <div class="field">
-            <label for="dropArea">Deliver to</label>
-            <input id="dropArea" type="text" list="placesList" placeholder="Area or campus, e.g. Chiromo" autocomplete="off" required>
+            <label for="dropArea">Deliver to (area or campus)</label>
+            <input id="dropArea" type="text" list="placesList" placeholder="Start typing… e.g. Chiromo" autocomplete="off" required>
           </div>
           <div class="field">
-            <label for="landmark">Landmark <span class="opt">optional</span></label>
-            <input id="landmark" type="text" placeholder="e.g. Blue gate opposite Shell">
+            <label for="landmark">Landmark / directions</label>
+            <input id="landmark" type="text" placeholder="e.g. Blue gate opposite Shell, Hall 5">
           </div>
         </div>
         <div class="loc-row">
-          <button type="button" class="btn btn-ghost btn-sm" id="locBtn">Use my location</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="locBtn">📍 Use my location</button>
           <span class="loc-status" id="locStatus" aria-live="polite"></span>
         </div>
         <datalist id="placesList"></datalist>
@@ -106,40 +110,40 @@
             <input id="custName" type="text" autocomplete="name" placeholder="e.g. Wanjiru" required>
           </div>
           <div class="field">
-            <label for="custPhone">Phone</label>
+            <label for="custPhone">Phone number</label>
             <input id="custPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07XX XXX XXX" required>
           </div>
         </div>
 
-        <div class="row2">
-          <fieldset class="field">
-            <legend>When</legend>
-            <div class="chips" role="radiogroup">
-              <label class="chip"><input type="radio" name="when" value="As soon as possible" checked><span>Now</span></label>
-              <label class="chip"><input type="radio" name="when" value="Later today"><span>Later today</span></label>
-              <label class="chip"><input type="radio" name="when" value="Tomorrow"><span>Tomorrow</span></label>
-            </div>
-          </fieldset>
-          <fieldset class="field">
-            <legend>Pay with</legend>
-            <div class="chips" role="radiogroup">
-              <label class="chip"><input type="radio" name="pay" value="M-Pesa on delivery" checked><span>M-Pesa</span></label>
-              <label class="chip"><input type="radio" name="pay" value="Cash on delivery"><span>Cash</span></label>
-            </div>
-          </fieldset>
-        </div>
+        <fieldset class="field">
+          <legend>When?</legend>
+          <div class="chips" role="radiogroup">
+            <label class="chip"><input type="radio" name="when" value="As soon as possible" checked><span>ASAP</span></label>
+            <label class="chip"><input type="radio" name="when" value="Later today"><span>Later today</span></label>
+            <label class="chip"><input type="radio" name="when" value="Tomorrow"><span>Tomorrow</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>Pay with</legend>
+          <div class="chips" role="radiogroup">
+            <label class="chip"><input type="radio" name="pay" value="M-Pesa on delivery" checked><span>M-Pesa on delivery</span></label>
+            <label class="chip"><input type="radio" name="pay" value="Cash on delivery"><span>Cash</span></label>
+          </div>
+        </fieldset>
 
         <p class="form-error" id="formError" role="alert" hidden></p>
 
         <div class="ticket-foot">
           <p class="fee-line" id="feeLine">Delivery fee: <strong>confirmed on WhatsApp</strong> before pickup. No extra charges.</p>
-          <button class="btn btn-ink btn-lg" type="submit">Send on WhatsApp</button>
+          <button class="btn btn-ink btn-lg" type="submit">Send order on WhatsApp</button>
         </div>
-        <p class="note privacy-note">We only use these details to deliver your order. <a href="privacy.html">Privacy</a></p>
+        <p class="note privacy-note">We only use these details to deliver your order. <a href="privacy.html">How we handle your details</a></p>
       </form>
 
       <div class="sent" id="sentCard" hidden>
-        <h3 class="h3">Your slip is ready. Press send in WhatsApp.</h3>
+        <p class="eyebrow">Order slip ready</p>
+        <h3 class="h3">Almost there! Hit send in WhatsApp.</h3>
         <pre class="sent-msg mono" id="sentMsg"></pre>
         <div class="sent-actions">
           <a class="btn btn-ink" id="sentWa" href="#" target="_blank" rel="noopener">Open WhatsApp again</a>
@@ -152,13 +156,14 @@
   </section>
 
   <!-- HOW IT WORKS: a real sequence, so it is numbered -->
-  <section class="band band-rule" id="how">
+  <section class="band band-sun" id="how">
     <div class="wrap">
-      <h2 class="h2">How an order works</h2>
+      <p class="eyebrow">How it works</p>
+      <h2 class="h2">Three steps. Zero stress.</h2>
       <ol class="steps">
-        <li><h3>You send the slip</h3><p>It reaches us on WhatsApp with your order code. Sosi can fill it in for you.</p></li>
-        <li><h3>We confirm and collect</h3><p>We tell you the item price and delivery fee. Once you agree, a rider picks it up.</p></li>
-        <li><h3>You check, then pay</h3><p>The rider brings it to your gate, hostel or desk. Look it over first, then pay by M-Pesa or cash.</p></li>
+        <li><span class="step-n">1</span><h3>You order</h3><p>Fill the slip or chat with Sosi. It lands on our WhatsApp with your order code.</p></li>
+        <li><span class="step-n">2</span><h3>We pick it</h3><p>We confirm the price with you, then a rider collects it from the shop, stall or plug.</p></li>
+        <li><span class="step-n">3</span><h3>We drop it</h3><p>Delivered to your gate, hostel or desk. You check it, then pay.</p></li>
       </ol>
     </div>
   </section>
@@ -167,13 +172,16 @@
   <section class="band band-ink" id="plugs">
     <div class="wrap">
       <div class="plugs-head">
-        <h2 class="h2">Verified Plugs</h2>
-        <p class="lede">Sellers we've bought from ourselves. Each one passed all five checks below before getting the badge, and loses it if they slip.</p>
+        <div>
+          <p class="eyebrow eyebrow-sun">Verified Plugs</p>
+          <h2 class="h2">No plug?<br><span class="hl-ink">We've got one.</span></h2>
+        </div>
+        <p class="lede">Every seller here passed the <strong>Sosick Test</strong>. We bought from them ourselves before giving them the badge. If they slip, they lose it.</p>
       </div>
 
       <div class="plug-tools">
         <label class="sr-only" for="plugSearch">Search plugs</label>
-        <input class="search" id="plugSearch" type="search" placeholder="Search: jeans, sneakers, perfume…">
+        <input class="search" id="plugSearch" type="search" placeholder="What are you hunting? jeans, sneakers, perfume…">
         <div class="cat-chips" id="catChips"></div>
       </div>
 
@@ -181,23 +189,24 @@
 
       <div class="test">
         <h3 class="h3">The Sosick Test</h3>
+        <p class="test-sub">A seller only goes live after passing all five checks:</p>
         <ul class="test-list">
-          <li><b>Mystery buy.</b> We order from them as an ordinary customer.</li>
-          <li><b>Photo matches product.</b> What arrives is what they posted.</li>
-          <li><b>Honest price.</b> No hidden charges, no price change after you pay.</li>
-          <li><b>On time.</b> They deliver or hand over when they said they would.</li>
-          <li><b>Sorts problems.</b> They fix issues and handle returns properly.</li>
+          <li><b>Mystery buy</b>We order from them as a normal customer.</li>
+          <li><b>Photo = product</b>What arrives matches what they posted.</li>
+          <li><b>Honest price</b>No hidden charges and no price that changes after you pay.</li>
+          <li><b>On time</b>They deliver or hand over when they said they would.</li>
+          <li><b>Sorts issues</b>They fix problems and handle returns properly.</li>
         </ul>
-        <dl class="badges">
-          <dt><span class="badge badge-verified">Verified</span></dt><dd>Passed the test</dd>
-          <dt><span class="badge badge-trusted">Trusted</span></dt><dd>Three months or more without a complaint</dd>
-          <dt><span class="badge badge-top">Top Plug</span></dt><dd>The one customers keep coming back to</dd>
-        </dl>
+        <div class="badges">
+          <span class="badge badge-verified">✓ Verified</span><span class="badge-desc">Passed the test</span>
+          <span class="badge badge-trusted">★ Trusted</span><span class="badge-desc">3+ months, no complaints</span>
+          <span class="badge badge-top">♛ Top Plug</span><span class="badge-desc">Comrades' favourite</span>
+        </div>
       </div>
 
       <div class="plug-ctas">
-        <a class="btn btn-sun wa-link" data-wa="Hi Sosick, I sell and I'd like you to test my shop for the Verified badge. Shop name:" href="#" target="_blank" rel="noopener">Get your shop tested</a>
-        <a class="btn btn-outline-sun wa-link" data-wa="Hi Sosick, I know a good seller you should test. Their name / page:" href="#" target="_blank" rel="noopener">Recommend a seller</a>
+        <a class="btn btn-sun wa-link" data-wa="Hi Sosick! I sell stuff and I'd like you to test my shop for the Verified badge. My shop name:" href="#" target="_blank" rel="noopener">I'm a seller: test my shop</a>
+        <a class="btn btn-outline-sun wa-link" data-wa="Hi Sosick! I know a solid plug you should test. Their name / page:" href="#" target="_blank" rel="noopener">Nominate a plug</a>
       </div>
     </div>
   </section>
@@ -205,13 +214,15 @@
   <!-- AREAS -->
   <section class="band band-paper" id="areas">
     <div class="wrap">
-      <h2 class="h2">Where we deliver</h2>
-      <p class="lede">Nairobi and the towns around it for now. Not listed? Order anyway and we'll tell you if a rider can reach you.</p>
-      <dl class="areas">
-        <dt>Campuses</dt><dd><ul class="pill-list" id="campusList"></ul></dd>
-        <dt>Areas</dt><dd><ul class="pill-list" id="areaList"></ul></dd>
-        <dt>Next</dt><dd><ul class="pill-list pill-list-soon" id="nextList"></ul></dd>
-      </dl>
+      <p class="eyebrow">Where we deliver</p>
+      <h2 class="h2">Nairobi first.<br>Kenya next.</h2>
+      <p class="lede">We're launching in Nairobi and nearby towns. Not on the list? Order anyway and we'll tell you if a rider can reach you.</p>
+      <h3 class="h4">Campuses</h3>
+      <ul class="pill-list" id="campusList"></ul>
+      <h3 class="h4">Areas</h3>
+      <ul class="pill-list" id="areaList"></ul>
+      <h3 class="h4">Coming next</h3>
+      <ul class="pill-list pill-list-soon" id="nextList"></ul>
     </div>
   </section>
 
@@ -226,7 +237,7 @@
     <div>
       <p class="footer-label">WhatsApp</p>
       <p class="mono footer-num wa-number">0112 275 881</p>
-      <a class="btn btn-sun btn-sm wa-link" data-wa="Hi Sosick" href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
+      <a class="btn btn-sun btn-sm wa-link" data-wa="Hi Sosick 👋" href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
     </div>
   </div>
   <div class="wrap footer-fine">© <span id="year">2026</span> Sosick · Nairobi, Kenya · <a href="privacy.html">Privacy</a></div>
@@ -234,7 +245,7 @@
 
 <!-- SOSI: the chat helper -->
 <button class="sosi-fab" id="sosiFab" type="button" aria-label="Chat with Sosi, the Sosick helper" aria-expanded="false" aria-controls="sosiPanel">
-  <span class="sosi-bubble" id="sosiNudge">Need something?</span>
+  <span class="sosi-bubble" id="sosiNudge">Niaje! Need something? 👀</span>
   <span class="sosi-face" aria-hidden="true"><i class="eye"></i><i class="eye"></i><i class="mouth"></i></span>
 </button>
 
@@ -252,8 +263,8 @@
   <div class="sosi-chips" id="sosiChips"></div>
   <form class="sosi-input" id="sosiForm">
     <label class="sr-only" for="sosiText">Message Sosi</label>
-    <input id="sosiText" type="text" autocomplete="off" placeholder="e.g. where can I get jeans?">
-    <button type="submit">Send</button>
+    <input id="sosiText" type="text" autocomplete="off" placeholder="Type here… e.g. where can I get jeans?">
+    <button type="submit" aria-label="Send">➤</button>
   </form>
 </section>
 
