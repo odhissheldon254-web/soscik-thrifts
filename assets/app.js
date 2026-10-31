@@ -400,9 +400,12 @@
       '<div class="plug-actions"><a class="btn btn-sun btn-sm" href="' + esc(waLink("Hi Sosick! I'd like my shop tested for the Sosick Verified badge. Shop name:")) + '" target="_blank" rel="noopener">Get tested</a></div></article>';
   }
 
-  var chipsHtml = '<button type="button" data-cat="all" aria-pressed="true">All</button>' +
-    S.categories.map(function (c) { return '<button type="button" data-cat="' + c.id + '" aria-pressed="false">' + esc(c.label) + "</button>"; }).join("");
-  $("catChips").innerHTML = chipsHtml;
+  function drawChips() {
+    if (activeCat !== "all" && !S.categories.some(function (c) { return c.id === activeCat; })) activeCat = "all";
+    $("catChips").innerHTML = '<button type="button" data-cat="all" aria-pressed="' + (activeCat === "all") + '">All</button>' +
+      S.categories.map(function (c) { return '<button type="button" data-cat="' + esc(c.id) + '" aria-pressed="' + (activeCat === c.id) + '">' + esc(c.label) + "</button>"; }).join("");
+  }
+  drawChips();
   $("catChips").addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;
     activeCat = b.getAttribute("data-cat");
@@ -415,8 +418,14 @@
   loadLive();
 
   function drawCats() {
-    if (window.SosickCats) window.SosickCats.grid($("catGrid"), S.plugs || [], null, true);
+    if (!window.SosickCats) return;
+    window.SosickCats.grid($("catGrid"), S.plugs || [], null, true);
+    var fresh = (S.products || []).filter(function (p) { return p.in_stock; }).slice(0, 8);
+    $("fresh").hidden = !fresh.length;
+    window.SosickCats.products($("freshGrid"), fresh);
   }
+  // His categories and products live in the database; redraw once they arrive.
+  if (window.SosickCats) window.SosickCats.load().then(function (ok) { if (ok) { drawChips(); renderPlugs(); drawCats(); } });
 
   // Coming from a category page ("Order kicks from any shop"): start the slip for them.
   (function () {

@@ -233,6 +233,23 @@ input:focus, textarea:focus, select:focus { outline: none; box-shadow: 0 0 0 3px
 .cat-hero-tag { font-size: 1.12rem; font-weight: 500; margin: 0 0 20px; max-width: 52ch; }
 .cat-hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
 
+/* ---------- products (his own items) ---------- */
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
+@media (max-width: 480px) { .product-grid { grid-template-columns: 1fr 1fr; gap: 12px; } }
+.product { display: flex; flex-direction: column; background: #fff; border: 3px solid var(--ink); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; min-width: 0; transition: transform .15s ease, box-shadow .15s ease; }
+.product:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0 var(--ink); }
+.product-photo { position: relative; aspect-ratio: 1 / 1; max-width: 100%; background: var(--tile, var(--sun)); border-bottom: 3px solid var(--ink); display: grid; place-items: center; font-size: 4rem; }
+.product-photo img { width: 100%; height: 100%; object-fit: cover; }
+.product-sold { position: absolute; top: 12px; left: -34px; transform: rotate(-35deg); background: var(--bad); color: #fff; font: 700 0.72rem/1 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; padding: 6px 40px; }
+.product.is-sold .product-photo img { filter: grayscale(.8); opacity: .7; }
+.product-body { display: flex; flex-direction: column; gap: 6px; padding: 14px; flex: 1; }
+.product-cat { font: 700 0.68rem/1 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.product h3 { font: 400 1.3rem/1.05 var(--f-display); text-transform: uppercase; margin: 0; overflow-wrap: anywhere; }
+.product p { margin: 0; font-size: 0.88rem; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.product-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 8px; }
+.product-price { font: 700 1rem/1 var(--f-mono); }
+@media (max-width: 480px) { .product-body { padding: 10px; } .product h3 { font-size: 1.05rem; } .product p { display: none; } .product-photo { font-size: 3rem; } }
+
 /* ---------- outfit match ---------- */
 .match-hero { padding-bottom: 50px; }
 .vibe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 8px; }

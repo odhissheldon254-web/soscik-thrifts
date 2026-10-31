@@ -148,6 +148,15 @@ input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 3px
 .testbar i { width: 14px; height: 6px; border-radius: 3px; background: var(--line); }
 .testbar i.on { background: var(--ok); }
 .inline-confirm { display: flex; gap: 6px; align-items: center; font-size: .8rem; font-weight: 700; color: var(--bad); }
+.photo-pick { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 14px; align-items: center; }
+.photo-preview { width: 120px; height: 120px; border: 2px dashed var(--muted); border-radius: 12px; display: grid; place-items: center; overflow: hidden; background: var(--paper); font-size: .78rem; color: var(--muted); text-align: center; }
+.photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+label.btn { cursor: pointer; justify-self: start; }
+.thumb { width: 64px; height: 64px; border-radius: 10px; border: 2px solid var(--ink); object-fit: cover; flex: none; background: var(--paper); display: grid; place-items: center; font-size: 1.6rem; }
+.item-row { display: flex; gap: 12px; align-items: flex-start; min-width: 0; }
+.swatch { width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--ink); display: inline-block; vertical-align: middle; }
+.cat-emoji-big { font-size: 1.8rem; line-height: 1; }
+code { font-family: var(--f-mono); font-size: .85em; background: rgba(0,0,0,.06); padding: 1px 5px; border-radius: 4px; }
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--sun); padding: 11px 18px; border-radius: 99px; font-weight: 800; z-index: 90; box-shadow: 3px 3px 0 var(--sun); }
 pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; padding: 12px; max-height: 260px; overflow: auto; font-size: .78rem; white-space: pre-wrap; word-break: break-word; }
 </style>
@@ -192,6 +201,8 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     <nav class="tabs" role="tablist" aria-label="Admin sections" id="tabs">
       <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
       <button role="tab" data-tab="orders" aria-selected="false">Orders <span class="tab-count" id="cOrders">0</span></button>
+      <button role="tab" data-tab="products" aria-selected="false">My products <span class="tab-count" id="cProducts">0</span></button>
+      <button role="tab" data-tab="cats" aria-selected="false">Categories</button>
       <button role="tab" data-tab="team" aria-selected="false">Team <span class="tab-count" id="cTeam">0</span></button>
       <button role="tab" data-tab="charges" aria-selected="false">Charges</button>
       <button role="tab" data-tab="plugs" aria-selected="false">Verified Plugs <span class="tab-count" id="cPlugs">0</span></button>
@@ -254,6 +265,52 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     </section>
 
     <!-- TEAM -->
+    <!-- MY PRODUCTS -->
+    <section data-panel="products" hidden>
+      <div class="page-head"><div><h1>My products</h1><p class="sub">Things Sosick makes or stocks itself: beading, art, clothes, anything. They show on the website under their category as "From Sosick", with an Order button.</p></div></div>
+      <div class="demo-note catalogue-off" role="note" hidden><b>One-time setup needed.</b><span>Run <code>supabase/003_catalogue.sql</code> in Supabase, then refresh this page.</span></div>
+      <div class="card" style="margin-bottom:14px">
+        <h2 id="prFormTitle">Add a product</h2>
+        <form id="prForm" class="form-grid">
+          <div class="full photo-pick">
+            <div class="photo-preview" id="prPreview"><span>No photo yet</span></div>
+            <div class="grid" style="gap:8px">
+              <label class="btn" for="prPhoto">📷 Choose photo</label>
+              <input id="prPhoto" type="file" accept="image/*" class="sr-only">
+              <span class="item-meta" id="prPhotoMsg">A clear photo sells. Square or portrait works best.</span>
+            </div>
+          </div>
+          <label class="f">Name<input id="prName" type="text" maxlength="80" required placeholder="e.g. Maasai bead bracelet"></label>
+          <label class="f">Category<select id="prCat"></select></label>
+          <label class="f">Price (KES) <span class="item-meta">optional</span><input id="prPrice" type="number" min="0" step="10" placeholder="Leave blank = Ask for price"></label>
+          <label class="f full">Description <span class="item-meta">optional</span><textarea id="prDesc" rows="3" maxlength="500" placeholder="Colours, sizes, made to order? How long it takes?"></textarea></label>
+          <label class="switch"><input type="checkbox" id="prStock" checked><i></i><span>In stock</span></label>
+          <label class="switch"><input type="checkbox" id="prVisible" checked><i></i><span>Show on website</span></label>
+          <div class="full row"><button class="btn btn-ink" type="submit" id="prSave">Save product</button><button class="btn" type="button" id="prCancel" hidden>Cancel edit</button><span class="item-meta" id="prMsg"></span></div>
+        </form>
+      </div>
+      <div class="list" id="prList"></div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section data-panel="cats" hidden>
+      <div class="page-head"><div><h1>Categories</h1><p class="sub">These are the tiles on the website. Add your own (Beading, Art…), rename, recolour, hide or reorder. Changes show on the site straight away.</p></div></div>
+      <div class="demo-note catalogue-off" role="note" hidden><b>One-time setup needed.</b><span>Run <code>supabase/003_catalogue.sql</code> in Supabase, then refresh this page.</span></div>
+      <div class="card" style="margin-bottom:14px">
+        <h2 id="caFormTitle">Add a category</h2>
+        <form id="caForm" class="form-grid">
+          <label class="f">Name on the tile<input id="caName" type="text" maxlength="40" required placeholder="e.g. Beading"></label>
+          <label class="f">Longer name <span class="item-meta">optional</span><input id="caLabel" type="text" maxlength="60" placeholder="e.g. Beads & Jewellery"></label>
+          <label class="f">Emoji<input id="caEmoji" type="text" maxlength="8" placeholder="📿"></label>
+          <label class="f">Tile colour<input id="caTile" type="color" value="#FFD21F"></label>
+          <label class="f full">Tagline<input id="caTag" type="text" maxlength="140" placeholder="e.g. Handmade beadwork: bracelets, necklaces, custom orders."></label>
+          <label class="f full">Search words <span class="item-meta">so search and Sosi find it, separated by commas</span><input id="caWords" type="text" maxlength="300" placeholder="e.g. beads, bracelet, necklace, beadwork, maasai"></label>
+          <div class="full row"><button class="btn btn-ink" type="submit" id="caSave">Save category</button><button class="btn" type="button" id="caCancel" hidden>Cancel edit</button><span class="item-meta" id="caMsg"></span></div>
+        </form>
+      </div>
+      <div class="list" id="caList"></div>
+    </section>
+
     <section data-panel="team" hidden>
       <div class="page-head"><div><h1>Team</h1><p class="sub">Everyone you've brought on: riders, plug testers, support. Switch someone off duty and they stop showing up for new orders.</p></div></div>
       <div class="card" style="margin-bottom:14px">
@@ -365,7 +422,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
 <div class="toast" id="toast" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="../assets/data.js?v=202610311713"></script>
+<script src="../assets/data.js?v=202610311726"></script>
 <script>
 (function () {
   "use strict";
@@ -386,7 +443,7 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   ];
   var STATUS = [["new", "New"], ["picked", "Picked up"], ["way", "On the way"], ["done", "Delivered"], ["cancel", "Cancelled"]];
 
-  var db = { orders: [], team: [], charges: [], plugs: [] };
+  var db = { orders: [], team: [], charges: [], plugs: [], categories: [], products: [] };
 
   var toastTimer;
   function toast(msg) { var t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2600); }
@@ -504,6 +561,25 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     ]).then(function (r) {
       db.orders = r[0]; db.team = r[1]; db.charges = r[2]; db.plugs = r[3];
       stamp(); render();
+      return loadCatalogue();
+    });
+  }
+
+  // Categories + products load on their own, so the admin still works
+  // before the catalogue SQL has been run.
+  var catalogueOn = false;
+  function loadCatalogue() {
+    return Promise.all([
+      sb.from("categories").select("*").order("sort").order("name"),
+      sb.from("products").select("*").order("sort").order("created_at", { ascending: false })
+    ]).then(function (r) {
+      catalogueOn = !r[0].error && !r[1].error;
+      document.querySelectorAll(".catalogue-off").forEach(function (n) { n.hidden = catalogueOn; });
+      if (catalogueOn) {
+        db.categories = r[0].data; db.products = r[1].data;
+        CATEGORIES = db.categories.map(function (c) { return [c.id, c.label || c.name]; });
+      }
+      fillCatSelects(); render();
     });
   }
   function stamp() { $("syncNote").textContent = "Updated " + new Date().toLocaleTimeString("en-KE", { hour: "2-digit", minute: "2-digit" }); }
@@ -689,7 +765,11 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
   ["qItem", "qKm", "qRush", "qNight"].forEach(function (id) { $(id).addEventListener("input", renderQuote); });
 
   /* ---------- plugs ---------- */
-  $("pCat").innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + esc(c[1]) + "</option>"; }).join("");
+  function fillCatSelects() {
+    var opts = CATEGORIES.map(function (c) { return '<option value="' + esc(c[0]) + '">' + esc(c[1]) + "</option>"; }).join("");
+    ["pCat", "prCat"].forEach(function (id) { var el = $(id), keep = el.value; el.innerHTML = opts; if (keep) el.value = keep; });
+  }
+  fillCatSelects();
   $("pChecks").innerHTML = "<b>Sosick Test</b>" + TEST.map(function (t) {
     return '<label><input type="checkbox" data-check="' + t[0] + '"><span>' + t[1] + "<small>" + t[2] + "</small></span></label>";
   }).join("");
@@ -845,10 +925,13 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     if (act === "rm") { pendingRemove = b.dataset.kind + id; render(); return; }
     if (act === "rm-no") { pendingRemove = null; render(); return; }
     if (act === "rm-yes") {
-      var k = { order: "orders", team: "team", plug: "plugs" }[b.dataset.kind];
+      var k = { order: "orders", team: "team", plug: "plugs", product: "products", category: "categories" }[b.dataset.kind];
+      var gone = db[k].filter(function (x) { return x.id === id; })[0];
       run(sb.from(k).delete().eq("id", id), "Removed").then(function () {
         db[k] = db[k].filter(function (x) { return x.id !== id; });
         if (k === "team") db.orders.forEach(function (o) { if (o.rider === id) o.rider = null; });
+        if (k === "products" && gone && photoPath(gone.photo)) sb.storage.from("products").remove([photoPath(gone.photo)]);
+        if (k === "categories") { CATEGORIES = db.categories.map(function (c) { return [c.id, c.label || c.name]; }); fillCatSelects(); }
         pendingRemove = null; render();
       }).catch(function () {});
       return;
@@ -892,11 +975,177 @@ pre.out { background: var(--ink); color: var(--sun); border-radius: 10px; paddin
     }
   });
 
+  /* ---------- my products ---------- */
+  var editingProduct = null, pendingPhoto = null;
+  function catName(id) { var c = db.categories.filter(function (x) { return x.id === id; })[0]; return c ? c.name : id; }
+  function kesOrAsk(p) { return p.price == null ? "Ask for price" : kes(p.price); }
+
+  // Shrink photos on the phone before upload: max 1200px, JPEG ~82%.
+  function shrinkPhoto(file) {
+    return new Promise(function (resolve, reject) {
+      if (!/^image\//.test(file.type)) return reject(new Error("That file isn't a photo."));
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        var max = 1200, w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, max / Math.max(w, h));
+        var c = document.createElement("canvas"); c.width = Math.round(w * k); c.height = Math.round(h * k);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { b ? resolve(b) : reject(new Error("Couldn't read that photo.")); }, "image/jpeg", 0.82);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("Couldn't open that photo. Try another one.")); };
+      img.src = url;
+    });
+  }
+  function showPreview(src) { $("prPreview").innerHTML = src ? '<img src="' + esc(src) + '" alt="">' : "<span>No photo yet</span>"; }
+  $("prPhoto").addEventListener("change", function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    $("prPhotoMsg").textContent = "Preparing photo…";
+    shrinkPhoto(f).then(function (blob) {
+      pendingPhoto = blob; showPreview(URL.createObjectURL(blob));
+      $("prPhotoMsg").textContent = "Ready (" + Math.round(blob.size / 1024) + " KB). It uploads when you save.";
+    }, function (err) { pendingPhoto = null; $("prPhotoMsg").textContent = err.message; });
+  });
+  function photoPath(url) { var m = String(url || "").match(/\/object\/public\/products\/(.+)$/); return m ? decodeURIComponent(m[1]) : null; }
+  function uploadPhoto(blob) {
+    var path = new Date().toISOString().slice(0, 7) + "/" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) + ".jpg";
+    return sb.storage.from("products").upload(path, blob, { contentType: "image/jpeg", upsert: false }).then(function (r) {
+      if (r.error) throw new Error("Photo upload failed: " + r.error.message);
+      return sb.storage.from("products").getPublicUrl(path).data.publicUrl;
+    });
+  }
+  function resetProductForm() {
+    editingProduct = null; pendingPhoto = null; $("prForm").reset(); $("prStock").checked = true; $("prVisible").checked = true;
+    showPreview(""); $("prPhotoMsg").textContent = "A clear photo sells. Square or portrait works best.";
+    $("prFormTitle").textContent = "Add a product"; $("prCancel").hidden = true; $("prMsg").textContent = "";
+  }
+  $("prCancel").addEventListener("click", resetProductForm);
+  $("prForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!catalogueOn) { toast("Run the catalogue setup first"); return; }
+    var name = $("prName").value.trim(); if (!name) { $("prMsg").textContent = "Give it a name."; return; }
+    var priceRaw = $("prPrice").value.trim();
+    var data = { name: name, category: $("prCat").value, description: $("prDesc").value.trim(), price: priceRaw === "" ? null : Math.max(0, +priceRaw), in_stock: $("prStock").checked, visible: $("prVisible").checked };
+    var btn = $("prSave"); btn.disabled = true; $("prMsg").textContent = pendingPhoto ? "Uploading photo…" : "Saving…";
+    var old = editingProduct ? db.products.filter(function (x) { return x.id === editingProduct; })[0] : null;
+    (pendingPhoto ? uploadPhoto(pendingPhoto) : Promise.resolve(null)).then(function (url) {
+      if (url) data.photo = url;
+      var q = editingProduct ? sb.from("products").update(data).eq("id", editingProduct).select().single() : sb.from("products").insert(data).select().single();
+      return run(q, name + " saved").then(function (row) {
+        if (url && old && photoPath(old.photo)) sb.storage.from("products").remove([photoPath(old.photo)]);
+        var i = db.products.findIndex(function (x) { return x.id === row.id; });
+        if (i >= 0) db.products[i] = row; else db.products.unshift(row);
+        resetProductForm(); render();
+      });
+    }).catch(function (err) { if (err && err.message) $("prMsg").textContent = err.message; })
+      .then(function () { btn.disabled = false; });
+  });
+  function renderProducts() {
+    if (!catalogueOn) { $("prList").innerHTML = '<div class="empty">Products appear here after the one-time setup.</div>'; return; }
+    $("prList").innerHTML = db.products.length ? db.products.map(function (p) {
+      return '<div class="item"><div class="item-row">' +
+        (p.photo ? '<img class="thumb" src="' + esc(p.photo) + '" alt="">' : '<span class="thumb">📦</span>') +
+        '<div style="min-width:0"><div class="item-title">' + esc(p.name) +
+        (p.in_stock ? "" : ' <span class="pill p-off">Sold out</span>') + (p.visible ? "" : ' <span class="pill p-testing">Hidden</span>') + "</div>" +
+        '<div class="item-meta">' + esc(catName(p.category)) + " · " + kesOrAsk(p) + "</div>" +
+        (p.description ? '<div class="item-meta">' + esc(p.description.slice(0, 120)) + "</div>" : "") + "</div></div>" +
+        '<div class="item-side">' +
+        '<button class="btn btn-sm" data-act="pr-stock" data-id="' + p.id + '">' + (p.in_stock ? "Mark sold out" : "Back in stock") + "</button>" +
+        '<button class="btn btn-sm" data-act="pr-edit" data-id="' + p.id + '">Edit</button>' +
+        removeControl("product", p.id) + "</div></div>";
+    }).join("") : '<div class="empty">No products yet. Add your first one above. Beading, art, clothes, anything Sosick sells itself.</div>';
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act^='pr-']"); if (!b) return;
+    var p = db.products.filter(function (x) { return x.id === b.dataset.id; })[0]; if (!p) return;
+    if (b.dataset.act === "pr-stock") {
+      var stock = !p.in_stock;
+      run(sb.from("products").update({ in_stock: stock }).eq("id", p.id), p.name + (stock ? " back in stock" : " marked sold out")).then(function () { p.in_stock = stock; render(); }, function () {});
+    }
+    if (b.dataset.act === "pr-edit") {
+      editingProduct = p.id; pendingPhoto = null;
+      $("prName").value = p.name; $("prCat").value = p.category; $("prPrice").value = p.price == null ? "" : p.price;
+      $("prDesc").value = p.description || ""; $("prStock").checked = p.in_stock; $("prVisible").checked = p.visible;
+      showPreview(p.photo); $("prPhotoMsg").textContent = p.photo ? "Choose a new photo to replace this one." : "Add a photo.";
+      $("prFormTitle").textContent = "Editing " + p.name; $("prCancel").hidden = false;
+      $("prForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+
+  /* ---------- categories ---------- */
+  var editingCat = null;
+  function slug(s) { return s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 30); }
+  function resetCatForm() {
+    editingCat = null; $("caForm").reset(); $("caTile").value = "#FFD21F";
+    $("caFormTitle").textContent = "Add a category"; $("caCancel").hidden = true; $("caMsg").textContent = "";
+  }
+  $("caCancel").addEventListener("click", resetCatForm);
+  $("caForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!catalogueOn) { toast("Run the catalogue setup first"); return; }
+    var name = $("caName").value.trim(); if (!name) { $("caMsg").textContent = "Give it a name."; return; }
+    var data = { name: name, label: $("caLabel").value.trim() || name, emoji: $("caEmoji").value.trim() || "🛍️", tile: $("caTile").value, tagline: $("caTag").value.trim(), words: $("caWords").value.trim() };
+    var q;
+    if (editingCat) q = sb.from("categories").update(data).eq("id", editingCat).select().single();
+    else {
+      var id = slug(name);
+      if (id.length < 2) { $("caMsg").textContent = "Use a name with at least two letters."; return; }
+      if (db.categories.some(function (c) { return c.id === id; })) { $("caMsg").textContent = "A category called that already exists."; return; }
+      data.id = id; data.sort = (db.categories.reduce(function (m, c) { return Math.max(m, c.sort); }, 0) || 0) + 10;
+      q = sb.from("categories").insert(data).select().single();
+    }
+    run(q, name + " saved").then(function (row) {
+      var i = db.categories.findIndex(function (x) { return x.id === row.id; });
+      if (i >= 0) db.categories[i] = row; else db.categories.push(row);
+      CATEGORIES = db.categories.map(function (c) { return [c.id, c.label || c.name]; });
+      fillCatSelects(); resetCatForm(); render();
+    }).catch(function () {});
+  });
+  function renderCats() {
+    if (!catalogueOn) { $("caList").innerHTML = '<div class="empty">Categories appear here after the one-time setup.</div>'; return; }
+    var list = db.categories.slice().sort(function (a, b) { return a.sort - b.sort; });
+    $("caList").innerHTML = list.map(function (c, i) {
+      var nP = db.products.filter(function (p) { return p.category === c.id; }).length;
+      var nL = db.plugs.filter(function (p) { return p.category === c.id; }).length;
+      return '<div class="item"><div class="item-row"><span class="cat-emoji-big">' + esc(c.emoji) + '</span><div style="min-width:0">' +
+        '<div class="item-title"><span class="swatch" style="background:' + esc(c.tile) + '"></span> ' + esc(c.name) + (c.visible ? "" : ' <span class="pill p-testing">Hidden</span>') + "</div>" +
+        '<div class="item-meta">' + nP + " product" + (nP === 1 ? "" : "s") + " · " + nL + " plug" + (nL === 1 ? "" : "s") + (c.tagline ? " · " + esc(c.tagline) : "") + "</div></div></div>" +
+        '<div class="item-side"><div class="row">' +
+        '<button class="btn btn-sm" data-act="ca-up" data-id="' + c.id + '" aria-label="Move up"' + (i === 0 ? " disabled" : "") + ">↑</button>" +
+        '<button class="btn btn-sm" data-act="ca-down" data-id="' + c.id + '" aria-label="Move down"' + (i === list.length - 1 ? " disabled" : "") + ">↓</button></div>" +
+        '<button class="btn btn-sm" data-act="ca-vis" data-id="' + c.id + '">' + (c.visible ? "Hide" : "Show") + "</button>" +
+        '<button class="btn btn-sm" data-act="ca-edit" data-id="' + c.id + '">Edit</button>' +
+        (nP || nL ? "" : removeControl("category", c.id)) + "</div></div>";
+    }).join("");
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act^='ca-']"); if (!b) return;
+    var list = db.categories.slice().sort(function (a, b2) { return a.sort - b2.sort; });
+    var i = list.findIndex(function (x) { return x.id === b.dataset.id; }), c = list[i]; if (!c) return;
+    if (b.dataset.act === "ca-vis") {
+      var vis = !c.visible;
+      run(sb.from("categories").update({ visible: vis }).eq("id", c.id), c.name + (vis ? " shown on the website" : " hidden from the website")).then(function () { c.visible = vis; render(); }, function () {});
+    }
+    if (b.dataset.act === "ca-up" || b.dataset.act === "ca-down") {
+      var j = b.dataset.act === "ca-up" ? i - 1 : i + 1, other = list[j]; if (!other) return;
+      var a = c.sort === other.sort ? (b.dataset.act === "ca-up" ? other.sort - 1 : other.sort + 1) : other.sort, o = c.sort;
+      Promise.all([run(sb.from("categories").update({ sort: a }).eq("id", c.id)), run(sb.from("categories").update({ sort: o }).eq("id", other.id))])
+        .then(function () { c.sort = a; other.sort = o; render(); }, function () {});
+    }
+    if (b.dataset.act === "ca-edit") {
+      editingCat = c.id;
+      $("caName").value = c.name; $("caLabel").value = c.label || ""; $("caEmoji").value = c.emoji; $("caTile").value = c.tile;
+      $("caTag").value = c.tagline || ""; $("caWords").value = c.words || "";
+      $("caFormTitle").textContent = "Editing " + c.name; $("caCancel").hidden = false;
+      $("caForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+
   function render() {
     $("cOrders").textContent = db.orders.filter(isOpen).length;
     $("cTeam").textContent = db.team.length;
     $("cPlugs").textContent = db.plugs.filter(function (p) { return p.status === "live"; }).length;
-    renderOverview(); renderOrders(); renderTeam(); renderCharges(); renderPlugs();
+    $("cProducts").textContent = db.products.filter(function (p) { return p.visible; }).length;
+    renderOverview(); renderOrders(); renderTeam(); renderCharges(); renderPlugs(); renderProducts(); renderCats();
   }
   var startTab = "overview";
   try { startTab = sessionStorage.getItem("sosick.tab") || "overview"; } catch (e) {}

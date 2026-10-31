@@ -234,6 +234,17 @@
     var q = cat ? cat.words[0] : low.replace(/where can i (get|find|buy)|plug( for)?|natafuta|nitapata wapi|looking for|who sells|\?/g, "").trim();
     var hits = K.searchPlugs(q, cat ? cat.id : "all");
     var what = cat ? cat.label.toLowerCase() : (q || "that");
+    // Sosick's own products come first: "we make these ourselves".
+    var ours = cat ? (S.products || []).filter(function (p) { return p.category === cat.id && p.in_stock; }) : [];
+    if (ours.length) {
+      mood("happy");
+      return bot(t("We make those ourselves! 😎 Here's what's in stock:", "Hizo tunatengeneza wenyewe! 😎 Hizi ziko stock:") +
+        ours.slice(0, 3).map(function (p) {
+          return '<div class="msg-card"><b>' + K.esc(p.name) + "</b><span>" + (p.price == null ? t("Ask for price", "Uliza bei") : "KES " + Number(p.price).toLocaleString("en-KE")) + "</span></div>";
+        }).join("") +
+        '<div class="msg-card"><a class="btn btn-ink btn-sm" href="category.html?c=' + encodeURIComponent(cat.id) + '">' + t("See all ", "Ona zote za ") + K.esc(cat.short || cat.label) + "</a></div>",
+        ["🛵 Order something", "🔌 Find a plug"]);
+    }
     if (hits.length) {
       mood("happy");
       var cards = hits.slice(0, 3).map(function (p) {
