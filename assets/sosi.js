@@ -403,9 +403,10 @@
       var greet = hour < 12 ? t("Good morning", "Morning boss") : hour < 17 ? t("Good afternoon", "Sasa") : t("Good evening", "Niaje, evening vibes");
       bot(greet + "! " + t("I'm <b>Sosi</b>, the Sosick helper. 🛍️ I can take your order, find you a verified plug, check if we reach your area, or entertain you. What's up?",
         "Mimi ni <b>Sosi</b>, bag ya Sosick 🛍️ Naweza kukuchukulia order, kukutafutia verified plug, kucheck kama tunafika kwako, ama kukuchekesha tu. Sema!"),
-        intent === "order" ? null : mainChips);
+        intent ? null : mainChips);
     }
     if (intent === "order") startOrder("", null, null);
+    if (intent === "fit") fitDice();
     setTimeout(function () { $("sosiText").focus(); }, 50);
   }
   function close() {
@@ -423,8 +424,10 @@
   });
   $("sosiClose").addEventListener("click", close);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !panel.hidden) close(); });
-  document.querySelectorAll("[data-open-sosi]").forEach(function (b) {
-    b.addEventListener("click", function () { open(b.getAttribute("data-open-sosi")); });
+  // Delegated, because category tiles are redrawn after plugs load.
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-open-sosi]");
+    if (b) open(b.getAttribute("data-open-sosi"));
   });
   $("sosiForm").addEventListener("submit", function (e) {
     e.preventDefault();

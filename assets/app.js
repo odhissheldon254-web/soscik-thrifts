@@ -206,7 +206,7 @@
     if (!S.supabaseUrl) return;
     api("plugs?select=name,category,area,sells,link,level,tested&status=eq.live&order=tested.desc.nullslast")
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (rows) { if (rows) { S.plugs = rows; renderPlugs(); } })
+      .then(function (rows) { if (rows) { S.plugs = rows; renderPlugs(); drawCats(); } })
       .catch(function () {});
     api("charges?select=id,is_on&seller=eq.false")
       .then(function (r) { return r.ok ? r.json() : null; })
@@ -411,7 +411,23 @@
   });
   $("plugSearch").addEventListener("input", renderPlugs);
   renderPlugs();
+  drawCats();
   loadLive();
+
+  function drawCats() {
+    if (window.SosickCats) window.SosickCats.grid($("catGrid"), S.plugs || [], null, true);
+  }
+
+  // Coming from a category page ("Order kicks from any shop"): start the slip for them.
+  (function () {
+    var item = new URLSearchParams(location.search).get("item");
+    if (!item) return;
+    $("item").value = item.slice(0, 120);
+    setTimeout(function () {
+      var el = $("item"); el.focus({ preventScroll: true });
+      el.setSelectionRange(el.value.length, el.value.length);
+    }, 600);
+  })();
 
   function showPlugSearch(q) {
     $("plugSearch").value = q;

@@ -40,15 +40,18 @@ window.SOSICK = {
   ],
   nextCities: ["Mombasa", "Kisumu", "Nakuru", "Eldoret", "Thika", "Machakos"],
 
+  // Categories. `id` and `label` are also used by the admin and the database,
+  // so don't rename an id once plugs use it. The rest is how the tile looks.
+  // Add a category = add one line here; its page works automatically.
   categories: [
-    { id: "denim",   label: "Denim & Jeans",   words: ["jeans", "denim", "trouser", "trousers", "jorts"] },
-    { id: "kicks",   label: "Sneakers & Shoes", words: ["sneakers", "shoes", "kicks", "sneaker", "airforce", "af1", "jordans", "boots", "sandals"] },
-    { id: "tops",    label: "Tees, Shirts & Hoodies", words: ["tshirt", "t-shirt", "tee", "shirt", "hoodie", "sweater", "top", "tops", "jacket", "jackets"] },
-    { id: "dresses", label: "Dresses & Skirts", words: ["dress", "dresses", "skirt", "skirts", "gown"] },
-    { id: "bags",    label: "Bags & Accessories", words: ["bag", "bags", "handbag", "backpack", "cap", "caps", "belt", "watch", "jewellery", "jewelry"] },
-    { id: "phones",  label: "Phones & Gadgets", words: ["phone", "phones", "earphones", "airpods", "charger", "gadget", "laptop"] },
-    { id: "beauty",  label: "Beauty & Grooming", words: ["perfume", "makeup", "skincare", "lotion", "hair", "wig", "wigs"] },
-    { id: "home",    label: "Home & Hostel", words: ["duvet", "bedsheet", "curtain", "curtains", "cooker", "hostel", "home"] }
+    { id: "kicks",   label: "Sneakers & Shoes", short: "Kicks", emoji: "👟", tile: "#FF5A36", tagline: "AF1s, dad shoes, Timbs, sandals. Fresh or barely worn.", item: "Sneakers, size ", words: ["sneakers", "shoes", "kicks", "sneaker", "airforce", "af1", "jordans", "boots", "sandals"] },
+    { id: "denim",   label: "Denim & Jeans",   short: "Denim", emoji: "👖", tile: "#3B6FE0", tagline: "Baggy, straight, ripped, jorts. Every wash, every size.", item: "Jeans, size ", words: ["jeans", "denim", "trouser", "trousers", "jorts"] },
+    { id: "tops",    label: "Tees, Shirts & Hoodies", short: "Tops & Hoodies", emoji: "👕", tile: "#22A65A", tagline: "Vintage tees, hoodies, jackets and shirts for every mood.", item: "Hoodie, size ", words: ["tshirt", "t-shirt", "tee", "shirt", "hoodie", "sweater", "top", "tops", "jacket", "jackets"] },
+    { id: "dresses", label: "Dresses & Skirts", short: "Dresses", emoji: "👗", tile: "#D6458F", tagline: "From Sunday best to Saturday out.", item: "Dress, size ", words: ["dress", "dresses", "skirt", "skirts", "gown"] },
+    { id: "bags",    label: "Bags & Accessories", short: "Bags & Extras", emoji: "👜", tile: "#8B5CF6", tagline: "Totes, caps, chains, watches. The finishing touch.", item: "Bag: ", words: ["bag", "bags", "handbag", "backpack", "cap", "caps", "belt", "watch", "jewellery", "jewelry"] },
+    { id: "phones",  label: "Phones & Gadgets", short: "Gadgets", emoji: "📱", tile: "#111110", tagline: "Phones, earbuds, chargers. Tested before you pay.", item: "Phone / gadget: ", words: ["phone", "phones", "earphones", "airpods", "charger", "gadget", "laptop"] },
+    { id: "beauty",  label: "Beauty & Grooming", short: "Beauty", emoji: "💄", tile: "#F28C28", tagline: "Perfume, skincare, hair and wigs from sellers we trust.", item: "Beauty: ", words: ["perfume", "makeup", "skincare", "lotion", "hair", "wig", "wigs"] },
+    { id: "home",    label: "Home & Hostel", short: "Hostel & Home", emoji: "🛏️", tile: "#0EA5A4", tagline: "Duvets, curtains, cookers. Make the room feel like home.", item: "For my room: ", words: ["duvet", "bedsheet", "curtain", "curtains", "cooker", "hostel", "home"] }
   ],
 
   // Verified Plugs. Only add a seller here after they pass all five checks

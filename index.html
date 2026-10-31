@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=202610311701">
+<link rel="stylesheet" href="assets/style.css?v=202610311707">
 </head>
 <body>
 
@@ -21,6 +21,7 @@
       <img class="brand-mark" src="assets/logo-wordmark.svg" alt="Sosick" width="150" height="44">
     </a>
     <nav class="nav" aria-label="Main">
+      <a href="#categories">Categories</a>
       <a href="#order">Order</a>
       <a href="#track">Track</a>
       <a href="#plugs">Verified Plugs</a>
@@ -57,6 +58,20 @@
   </section>
 
   <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <!-- CATEGORIES -->
+  <section class="band band-paper band-cats" id="categories">
+    <div class="wrap">
+      <div class="cats-head">
+        <div>
+          <p class="eyebrow">Categories</p>
+          <h2 class="h2">Shop by<br><span class="hl">category.</span></h2>
+        </div>
+        <p class="lede">Pick a lane. Every category has its own page you can share, with the Verified Plugs for it and a one-tap order.</p>
+      </div>
+      <div class="cat-grid" id="catGrid"></div>
+    </div>
+  </section>
 
   <!-- ORDER -->
   <section class="band band-paper" id="order">
@@ -315,8 +330,9 @@
   </form>
 </section>
 
-<script src="assets/data.js?v=202610311701"></script>
-<script src="assets/app.js?v=202610311701"></script>
-<script src="assets/sosi.js?v=202610311701"></script>
+<script src="assets/data.js?v=202610311707"></script>
+<script src="assets/cats.js?v=202610311707"></script>
+<script src="assets/app.js?v=202610311707"></script>
+<script src="assets/sosi.js?v=202610311707"></script>
 </body>
 </html>
