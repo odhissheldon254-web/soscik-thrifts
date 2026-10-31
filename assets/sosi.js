@@ -123,9 +123,9 @@
         '<div class="msg-card">' + waBtn("Apply on WhatsApp", "Hi Sosick! I'd like to work with Sosick. Name: , Area: , Role I want: ") + "</div>", mainChips);
     }
     if (has(low, ["track", "where is my", "status", "iko wapi", "late"])) {
-      return bot(t("Live tracking is coming soon. For now, send your order code (it starts with SOS-) to us and you'll get an update.",
-        "Tracking live inakuja soon 🔜. Kwa sasa, tuma order code yako (inaanza na SOS-) kwetu, utapata update haraka.") +
-        '<div class="msg-card">' + waBtn("Ask about my order", "Hi Sosick! Checking on my order. Code: SOS-") + "</div>", mainChips);
+      return bot(t("Let's find your rider! 🛵 You need your order code (SOS-1234, it's on your WhatsApp slip) and the last 4 digits of your phone.",
+        "Twende tumtafute rider wako! 🛵 Unahitaji order code (SOS-1234, iko kwa slip yako ya WhatsApp) na digits 4 za mwisho za simu yako.") +
+        '<div class="msg-card"><button class="btn btn-ink btn-sm" type="button" data-sosi-track>Open the tracker</button></div>', mainChips);
     }
     if (has(low, ["order", "deliver", "send", "pick", "pickup", "bring", "letea", "nileteeni", "buy for me", "errand"]) && !/do you deliver|mna deliver|you deliver to/.test(low)) {
       return startOrder(text, cat, place);
@@ -416,6 +416,11 @@
   }
 
   fab.addEventListener("click", function () { open(); });
+  log.addEventListener("click", function (e) {
+    if (!e.target.closest("[data-sosi-track]")) return;
+    close();
+    K.openTracker(true);
+  });
   $("sosiClose").addEventListener("click", close);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !panel.hidden) close(); });
   document.querySelectorAll("[data-open-sosi]").forEach(function (b) {

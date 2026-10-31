@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=202610311651">
+<link rel="stylesheet" href="assets/style.css?v=202610311701">
 </head>
 <body>
 
@@ -22,6 +22,7 @@
     </a>
     <nav class="nav" aria-label="Main">
       <a href="#order">Order</a>
+      <a href="#track">Track</a>
       <a href="#plugs">Verified Plugs</a>
       <a href="#how">How it works</a>
       <a href="#areas">Areas</a>
@@ -149,8 +150,54 @@
           <a class="btn btn-ink" id="sentWa" href="#" target="_blank" rel="noopener">Open WhatsApp again</a>
           <button class="btn btn-ghost" type="button" id="copyMsg">Copy message</button>
           <button class="btn btn-ghost" type="button" id="newOrder">New order</button>
+          <a class="btn btn-ghost" href="#track" id="trackThis">🛵 Track this order</a>
         </div>
         <p class="note">WhatsApp didn't open? Send the message above to <strong class="mono wa-number">0112 275 881</strong>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRACK -->
+  <section class="band band-track" id="track">
+    <div class="wrap">
+      <div class="track-head">
+        <div>
+          <p class="eyebrow">Track your order</p>
+          <h2 class="h2">Where's my<br><span class="hl">stuff?</span></h2>
+        </div>
+        <p class="lede">Type your order code and the last 4 digits of the phone you ordered with. Watch your rider move in real time.</p>
+      </div>
+
+      <form class="track-form" id="trackForm" novalidate>
+        <div class="field">
+          <label for="tCode">Order code</label>
+          <input id="tCode" type="text" placeholder="SOS-1234" autocomplete="off" autocapitalize="characters" maxlength="8">
+        </div>
+        <div class="field">
+          <label for="tPhone">Last 4 phone digits</label>
+          <input id="tPhone" type="text" inputmode="numeric" placeholder="e.g. 5678" maxlength="4" autocomplete="off">
+        </div>
+        <button class="btn btn-ink btn-lg" type="submit" id="tBtn">Track it</button>
+      </form>
+      <p class="form-error" id="tError" role="alert" hidden></p>
+
+      <div class="tracker" id="tracker" hidden aria-live="polite">
+        <div class="tracker-top">
+          <span class="mono" id="trCode">SOS-0000</span>
+          <span class="tracker-area" id="trArea"></span>
+        </div>
+        <p class="tracker-status" id="trStatus">ON THE WAY</p>
+        <div class="road" id="trRoad">
+          <div class="road-fill" id="trFill"></div>
+          <span class="rider" id="trRider" aria-hidden="true">🛵</span>
+          <ol class="stops">
+            <li data-stop="new"><b>Received</b><small></small></li>
+            <li data-stop="picked"><b>Picked up</b><small></small></li>
+            <li data-stop="way"><b>On the way</b><small></small></li>
+            <li data-stop="done"><b>Delivered</b><small></small></li>
+          </ol>
+        </div>
+        <p class="tracker-note" id="trNote"></p>
       </div>
     </div>
   </section>
@@ -268,8 +315,8 @@
   </form>
 </section>
 
-<script src="assets/data.js?v=202610311651"></script>
-<script src="assets/app.js?v=202610311651"></script>
-<script src="assets/sosi.js?v=202610311651"></script>
+<script src="assets/data.js?v=202610311701"></script>
+<script src="assets/app.js?v=202610311701"></script>
+<script src="assets/sosi.js?v=202610311701"></script>
 </body>
 </html>

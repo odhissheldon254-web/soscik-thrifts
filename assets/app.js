@@ -130,6 +130,7 @@
     $("sentCard").hidden = false;
     window.open(link, "_blank", "noopener");
     saveOrderOnline(order);
+    rememberOrder(order);
 
     function fail(el, text) {
       el.classList.add("is-bad");
@@ -212,6 +213,104 @@
       .then(function (rows) { if (rows) applyCharges(rows); })
       .catch(function () {});
   }
+
+  /* ---------------- order tracker ---------------- */
+  var STOPS = ["new", "picked", "way", "done"];
+  var STATUS_TEXT = {
+    new: ["Order received", "We've got it. We'll confirm the price with you on WhatsApp, then a rider heads out."],
+    picked: ["Picked up", "Your rider has it and is getting ready to move."],
+    way: ["On the way", "Your rider is heading to you. Keep your phone close."],
+    done: ["Delivered", "Enjoy! Anything wrong with it? Message us on WhatsApp."],
+    cancel: ["Cancelled", "This order was cancelled. Questions? Message us on WhatsApp."]
+  };
+  var trackTimer = null;
+
+  // Remember the last order on this phone so tracking is one tap.
+  function rememberOrder(o) {
+    try { localStorage.setItem("sosick.lastOrder", JSON.stringify({ code: o.code, phone4: o.phone.slice(-4) })); } catch (e) {}
+  }
+  function lastOrder() {
+    try { return JSON.parse(localStorage.getItem("sosick.lastOrder")) || null; } catch (e) { return null; }
+  }
+
+  function trackError(text) { var e = $("tError"); e.textContent = text; e.hidden = !text; }
+  function timeOf(iso) {
+    if (!iso) return "";
+    var d = new Date(iso), today = new Date().toDateString() === d.toDateString();
+    return (today ? "" : d.toLocaleDateString("en-KE", { day: "numeric", month: "short" }) + ", ") + d.toLocaleTimeString("en-KE", { hour: "numeric", minute: "2-digit" });
+  }
+
+  function showTracking(o) {
+    var cancelled = o.status === "cancel";
+    var idx = cancelled ? Math.max(0, STOPS.filter(function (s) { return o.timeline && o.timeline[s]; }).length - 1) : STOPS.indexOf(o.status);
+    var pct = Math.max(0, idx) / (STOPS.length - 1) * 100;
+    var text = STATUS_TEXT[o.status] || STATUS_TEXT.new;
+    $("trCode").textContent = o.code;
+    $("trArea").textContent = o.drop_area ? "To " + o.drop_area : "";
+    $("trStatus").textContent = text[0];
+    $("trStatus").className = "tracker-status" + (o.status === "done" ? " is-done" : cancelled ? " is-cancel" : "");
+    $("trNote").textContent = text[1];
+    var road = $("trRoad");
+    road.className = "road" + (o.status === "done" ? " is-done" : cancelled ? " is-cancel" : "");
+    $("trFill").style.width = "calc(" + pct + "% + " + (pct ? 0 : 34) + "px)";
+    $("trRider").style.left = pct + "%";
+    road.querySelectorAll("[data-stop]").forEach(function (li, i) {
+      var stop = li.getAttribute("data-stop");
+      li.classList.toggle("reached", i <= idx);
+      li.querySelector("small").textContent = timeOf(o.timeline && o.timeline[stop]);
+    });
+    $("tracker").hidden = false;
+  }
+
+  function lookUp(code, phone4, quiet) {
+    if (!S.supabaseUrl) return Promise.resolve();
+    return api("rpc/track_order", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ p_code: code, p_phone4: phone4 })
+    }).then(function (r) {
+      if (r.status === 404) throw { kind: "off" };
+      if (!r.ok) throw { kind: "net" };
+      return r.json();
+    }).then(function (rows) {
+      if (!rows.length) {
+        if (!quiet) { $("tracker").hidden = true; trackError("We couldn't find that order. Check the code and the last 4 digits of the phone you ordered with."); }
+        return;
+      }
+      trackError(""); showTracking(rows[0]);
+      clearInterval(trackTimer);
+      if (rows[0].status !== "done" && rows[0].status !== "cancel") {
+        trackTimer = setInterval(function () { if (document.visibilityState === "visible") lookUp(code, phone4, true); }, 20000);
+      }
+    }).catch(function (err) {
+      if (quiet) return;
+      trackError(err && err.kind === "off"
+        ? "Tracking is switching on. For now, send your order code to us on WhatsApp and we'll update you."
+        : "No connection. Check your internet and try again.");
+    });
+  }
+
+  $("trackForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var raw = $("tCode").value.trim().toUpperCase().replace(/\s/g, "");
+    var m = raw.match(/^(?:SOS-?)?(\d{4})$/);
+    var phone4 = $("tPhone").value.replace(/\D/g, "");
+    if (!m) { trackError("Order codes look like SOS-1234. You'll find yours on your WhatsApp order slip."); $("tCode").focus(); return; }
+    if (phone4.length !== 4) { trackError("Type the last 4 digits of the phone number you ordered with."); $("tPhone").focus(); return; }
+    var code = "SOS-" + m[1];
+    $("tCode").value = code;
+    var btn = $("tBtn"); btn.disabled = true; btn.textContent = "Checking…";
+    lookUp(code, phone4).then(function () { btn.disabled = false; btn.textContent = "Track it"; });
+  });
+
+  function openTracker(auto) {
+    var last = lastOrder();
+    if (last) { $("tCode").value = last.code; $("tPhone").value = last.phone4; }
+    document.getElementById("track").scrollIntoView({ behavior: "smooth" });
+    if (last && auto) $("trackForm").requestSubmit();
+    else setTimeout(function () { (last ? $("tBtn") : $("tCode")).focus({ preventScroll: true }); }, 500);
+  }
+  $("trackThis").addEventListener("click", function (e) { e.preventDefault(); openTracker(true); });
+  (function () { var last = lastOrder(); if (last) { $("tCode").value = last.code; $("tPhone").value = last.phone4; } })();
 
   /* ---------------- WhatsApp links ---------------- */
   document.querySelectorAll(".wa-link").forEach(function (a) {
@@ -323,6 +422,6 @@
   window.Sosick = {
     esc: esc, waLink: waLink, normalisePhone: normalisePhone, newCode: newCode,
     findPlace: findPlace, buildOrderMessage: buildOrderMessage, fillOrderForm: fillOrderForm,
-    searchPlugs: searchPlugs, catForText: catForText, showPlugSearch: showPlugSearch,
+    searchPlugs: searchPlugs, catForText: catForText, showPlugSearch: showPlugSearch, openTracker: openTracker,
   };
 })();
