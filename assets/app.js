@@ -4,6 +4,11 @@
   "use strict";
   var S = window.SOSICK;
   var $ = function (id) { return document.getElementById(id); };
+  // Switch screens (see views.js); falls back to scrolling if the switcher is missing.
+  function goTo(id) {
+    if (window.SosickViews) window.SosickViews.go(id);
+    else { var el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: "smooth" }); }
+  }
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -168,7 +173,7 @@
     if (o.name) $("custName").value = o.name;
     if (o.phone) $("custPhone").value = o.phone;
     $("sentCard").hidden = true; form.hidden = false;
-    document.getElementById("order").scrollIntoView({ behavior: "smooth" });
+    goTo("order");
   }
 
   /* ---------------- Supabase (public key, read-only except new orders) ---------------- */
@@ -305,7 +310,7 @@
   function openTracker(auto) {
     var last = lastOrder();
     if (last) { $("tCode").value = last.code; $("tPhone").value = last.phone4; }
-    document.getElementById("track").scrollIntoView({ behavior: "smooth" });
+    goTo("track");
     if (last && auto) $("trackForm").requestSubmit();
     else setTimeout(function () { (last ? $("tBtn") : $("tCode")).focus({ preventScroll: true }); }, 500);
   }
@@ -323,7 +328,8 @@
   var tick = tickerWords.map(function (w) { return "<span>" + esc(w) + "</span>"; }).join("");
   $("ticker").innerHTML = tick + tick; // doubled so the loop is seamless
 
-  function pills(list) { return list.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join(""); }
+  // Spans let the route-board style draw each stop over the route line.
+  function pills(list) { return list.map(function (a) { return "<li><span>" + esc(a) + "</span></li>"; }).join(""); }
   $("campusList").innerHTML = pills(S.campuses);
   $("areaList").innerHTML = pills(S.areas);
   $("nextList").innerHTML = pills(S.nextCities);
@@ -441,7 +447,7 @@
   function showPlugSearch(q) {
     $("plugSearch").value = q;
     renderPlugs();
-    document.getElementById("plugs").scrollIntoView({ behavior: "smooth" });
+    goTo("plugs");
   }
 
   window.Sosick = {

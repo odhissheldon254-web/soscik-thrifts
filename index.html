@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=202610311726">
+<link rel="stylesheet" href="assets/style.css?v=202610311751">
 </head>
 <body>
 
@@ -21,13 +21,12 @@
       <img class="brand-mark" src="assets/logo-wordmark.svg" alt="Sosick" width="150" height="44">
     </a>
     <nav class="nav" aria-label="Main">
-      <a href="#categories">Categories</a>
+      <a href="#top" data-nav="home">Home</a>
       <a href="outfit.html">Outfit Match</a>
-      <a href="#order">Order</a>
-      <a href="#track">Track</a>
-      <a href="#plugs">Verified Plugs</a>
-      <a href="#how">How it works</a>
-      <a href="#areas">Areas</a>
+      <a href="#order" data-nav="order">Order</a>
+      <a href="#track" data-nav="track">Track</a>
+      <a href="#plugs" data-nav="plugs">Verified Plugs</a>
+      <a href="#info" data-nav="info">How &amp; where</a>
     </nav>
     <a class="btn btn-ink btn-sm wa-link" data-wa="Hi Sosick 👋" href="#" target="_blank" rel="noopener">WhatsApp us</a>
   </div>
@@ -35,6 +34,7 @@
 
 <main id="top">
 
+  <div class="view view-home" data-view="home">
   <!-- HERO: the two engines side by side, equal weight -->
   <section class="hero">
     <div class="wrap">
@@ -88,6 +88,9 @@
     </div>
   </section>
 
+  </div>
+
+  <div class="view view-order" data-view="order">
   <!-- ORDER -->
   <section class="band band-paper" id="order">
     <div class="wrap order-grid">
@@ -187,6 +190,9 @@
     </div>
   </section>
 
+  </div>
+
+  <div class="view view-track" data-view="track">
   <!-- TRACK -->
   <section class="band band-track" id="track">
     <div class="wrap">
@@ -232,19 +238,9 @@
     </div>
   </section>
 
-  <!-- HOW IT WORKS: a real sequence, so it is numbered -->
-  <section class="band band-sun" id="how">
-    <div class="wrap">
-      <p class="eyebrow">How it works</p>
-      <h2 class="h2">Three steps. Zero stress.</h2>
-      <ol class="steps">
-        <li><span class="step-n">1</span><h3>You order</h3><p>Fill the slip or chat with Sosi. It lands on our WhatsApp with your order code.</p></li>
-        <li><span class="step-n">2</span><h3>We pick it</h3><p>We confirm the price with you, then a rider collects it from the shop, stall or plug.</p></li>
-        <li><span class="step-n">3</span><h3>We drop it</h3><p>Delivered to your gate, hostel or desk. You check it, then pay.</p></li>
-      </ol>
-    </div>
-  </section>
+  </div>
 
+  <div class="view view-plugs" data-view="plugs">
   <!-- VERIFIED PLUGS -->
   <section class="band band-ink" id="plugs">
     <div class="wrap">
@@ -288,20 +284,39 @@
     </div>
   </section>
 
+  </div>
+
+  <div class="view view-info" data-view="info">
+  <span id="info"></span>
+  <!-- HOW IT WORKS: a real sequence, so it is numbered -->
+  <section class="band band-sun" id="how">
+    <div class="wrap">
+      <p class="eyebrow">How it works</p>
+      <h2 class="h2">Three steps. Zero stress.</h2>
+      <ol class="steps">
+        <li><span class="step-n">1</span><h3>You order</h3><p>Fill the slip or chat with Sosi. It lands on our WhatsApp with your order code.</p></li>
+        <li><span class="step-n">2</span><h3>We pick it</h3><p>We confirm the price with you, then a rider collects it from the shop, stall or plug.</p></li>
+        <li><span class="step-n">3</span><h3>We drop it</h3><p>Delivered to your gate, hostel or desk. You check it, then pay.</p></li>
+      </ol>
+    </div>
+  </section>
+
   <!-- AREAS -->
   <section class="band band-paper" id="areas">
     <div class="wrap">
       <p class="eyebrow">Where we deliver</p>
       <h2 class="h2">Nairobi first.<br>Kenya next.</h2>
       <p class="lede">We're launching in Nairobi and nearby towns. Not on the list? Order anyway and we'll tell you if a rider can reach you.</p>
-      <h3 class="h4">Campuses</h3>
+      <h3 class="h4 route-sign"><b>Route 1</b> Campuses</h3>
       <ul class="pill-list" id="campusList"></ul>
-      <h3 class="h4">Areas</h3>
+      <h3 class="h4 route-sign"><b>Route 2</b> Areas</h3>
       <ul class="pill-list" id="areaList"></ul>
-      <h3 class="h4">Coming next</h3>
+      <h3 class="h4 route-sign route-sign-soon"><b>Soon</b> Coming next</h3>
       <ul class="pill-list pill-list-soon" id="nextList"></ul>
     </div>
   </section>
+
+  </div>
 
 </main>
 
@@ -319,6 +334,15 @@
   </div>
   <div class="wrap footer-fine">© <span id="year">2026</span> Sosick · Nairobi, Kenya · <a href="privacy.html">Privacy</a></div>
 </footer>
+
+<!-- TAB BAR (phones): one tap per screen -->
+<nav class="tabbar" aria-label="Screens">
+  <a href="#top" data-nav="home"><span aria-hidden="true">🏠</span>Home</a>
+  <a href="#order" data-nav="order"><span aria-hidden="true">🛵</span>Order</a>
+  <a href="#track" data-nav="track"><span aria-hidden="true">📍</span>Track</a>
+  <a href="#plugs" data-nav="plugs"><span aria-hidden="true">🔌</span>Plugs</a>
+  <a href="#info" data-nav="info"><span aria-hidden="true">📖</span>Info</a>
+</nav>
 
 <!-- SOSI: the chat helper -->
 <button class="sosi-fab" id="sosiFab" type="button" aria-label="Chat with Sosi, the Sosick helper" aria-expanded="false" aria-controls="sosiPanel">
@@ -345,9 +369,10 @@
   </form>
 </section>
 
-<script src="assets/data.js?v=202610311726"></script>
-<script src="assets/cats.js?v=202610311726"></script>
-<script src="assets/app.js?v=202610311726"></script>
-<script src="assets/sosi.js?v=202610311726"></script>
+<script src="assets/views.js?v=202610311751"></script>
+<script src="assets/data.js?v=202610311751"></script>
+<script src="assets/cats.js?v=202610311751"></script>
+<script src="assets/app.js?v=202610311751"></script>
+<script src="assets/sosi.js?v=202610311751"></script>
 </body>
 </html>

@@ -491,3 +491,156 @@ input:focus, textarea:focus, select:focus { outline: none; box-shadow: 0 0 0 3px
 .sosi-input { display: flex; gap: 8px; padding: 10px 12px 12px; border-top: 2px solid var(--ink); background: #fff; }
 .sosi-input input { background: var(--paper); }
 .sosi-input button { flex: none; width: 46px; border-radius: 12px; border: 2px solid var(--ink); background: var(--ink); color: var(--sun); font-size: 1.1rem; cursor: pointer; }
+
+/* =====================================================================
+   SCREENS: Home / Order / Track / Plugs / Info each get their own look,
+   all in yellow, white and black. (views.js decides which one shows.)
+   ===================================================================== */
+
+/* ---------- phone tab bar ---------- */
+.tabbar { display: none; }
+@media (max-width: 820px) {
+  .tabbar {
+    position: fixed; z-index: 65; left: 0; right: 0; bottom: 0;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    background: var(--ink); border-top: 3px solid var(--sun);
+    padding: 6px max(6px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px));
+  }
+  .tabbar a { display: grid; justify-items: center; gap: 2px; padding: 6px 2px; border-radius: 10px; color: var(--muted-ink); text-decoration: none; font: 700 0.68rem/1 var(--f-body); }
+  .tabbar a span { font-size: 1.3rem; line-height: 1; filter: grayscale(.6); transition: transform .15s ease; }
+  .tabbar a[aria-current="page"] { background: var(--sun); color: var(--ink); }
+  .tabbar a[aria-current="page"] span { filter: none; transform: translateY(-2px) scale(1.12); }
+  body:has(.tabbar) { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+  body:has(.tabbar) .sosi-fab { bottom: calc(82px + env(safe-area-inset-bottom, 0px)); }
+  body:has(.tabbar) .sosi-panel { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); height: min(600px, calc(100dvh - 110px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))); }
+}
+.nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 3px; }
+
+/* ---------- ORDER: "the counter" — black with comic dots, a paper receipt ---------- */
+.view-order #order {
+  background: var(--ink) radial-gradient(rgba(255, 210, 31, .16) 1.6px, transparent 1.8px) 0 0 / 18px 18px;
+  color: var(--paper); padding-block: 64px 80px;
+}
+.view-order .eyebrow { background: var(--sun); color: var(--ink); }
+.view-order .order-intro .h2 { color: var(--paper); }
+.view-order .order-intro .lede, .view-order .order-intro .note { color: var(--muted-ink); }
+.view-order .order-intro .linkish { color: var(--sun); }
+.view-order .ticks li { color: var(--paper); }
+.view-order .ticket, .view-order .sent {
+  position: relative; border: 0; border-radius: 0; color: var(--ink);
+  background: #fffdf5; box-shadow: 0 22px 50px rgba(0, 0, 0, .55); transform: rotate(-0.6deg);
+  margin-block: 14px;
+}
+.view-order .sent { background: #fffdf5; }
+/* torn zig-zag top and bottom edges */
+.view-order .ticket::before, .view-order .ticket::after, .view-order .sent::before, .view-order .sent::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 12px;
+  background: linear-gradient(135deg, #fffdf5 6px, transparent 0) 0 0 / 12px 12px repeat-x, linear-gradient(-135deg, #fffdf5 6px, transparent 0) 0 0 / 12px 12px repeat-x;
+}
+.view-order .ticket::before, .view-order .sent::before { top: -12px; transform: scaleY(-1); }
+.view-order .ticket::after, .view-order .sent::after { bottom: -12px; }
+.view-order .ticket-head { background: transparent; color: var(--ink); border-bottom: 2px dashed var(--ink); border-radius: 0; font-size: 0.82rem; }
+.view-order .ticket-head .mono { background: var(--ink); color: var(--sun); padding: 3px 8px; }
+.view-order .ticket-foot { position: relative; }
+/* rubber stamp */
+.view-order .ticket-foot::after {
+  content: "SOSICK ✓"; position: absolute; right: 4px; top: -86px; pointer-events: none;
+  font: 400 1.5rem/1 var(--f-display); letter-spacing: .08em; color: var(--bad);
+  border: 3px double var(--bad); border-radius: 8px; padding: 6px 10px; transform: rotate(-14deg); opacity: .32;
+}
+@media (max-width: 560px) { .view-order .ticket-foot::after { display: none; } }
+
+/* ---------- TRACK: a street map ---------- */
+.view-track #track {
+  position: relative; overflow: hidden; border-top: 0;
+  background:
+    linear-gradient(rgba(17, 17, 16, .07) 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(90deg, rgba(17, 17, 16, .07) 1px, transparent 1px) 0 0 / 44px 44px,
+    var(--sun);
+  padding-block: 64px 90px;
+}
+/* two "streets" crossing behind everything */
+.view-track #track::before, .view-track #track::after {
+  content: ""; position: absolute; z-index: 0; left: -10%; right: -10%; height: 46px;
+  background: var(--paper); border-block: 3px solid var(--ink);
+  background-image: repeating-linear-gradient(90deg, var(--ink) 0 26px, transparent 26px 50px);
+  background-size: 100% 4px; background-position: center; background-repeat: no-repeat;
+  opacity: .55;
+}
+.view-track #track::before { top: 34%; transform: rotate(-8deg); }
+.view-track #track::after { top: 72%; transform: rotate(5deg); }
+.view-track #track > .wrap { position: relative; z-index: 1; }
+.view-track .track-head .lede { color: var(--ink); }
+.view-track .track-form { background: var(--paper); border: 3px solid var(--ink); border-radius: var(--r); box-shadow: var(--shadow); padding: 18px; }
+.view-track .tracker-top .mono::before { content: "📍 "; }
+
+/* ---------- PLUGS: night market ---------- */
+.view-plugs #plugs { position: relative; padding-top: 110px; }
+/* string of fairy lights across the top */
+.view-plugs #plugs::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 18px; height: 46px;
+  background:
+    radial-gradient(circle at 50% 62%, #fff6c2 0 3px, var(--sun) 4px 6px, rgba(255, 210, 31, .35) 7px, transparent 15px) 0 0 / 52px 46px repeat-x,
+    radial-gradient(ellipse 30px 16px at 50% 0, transparent 13px, rgba(255, 250, 230, .35) 14px 15px, transparent 16px) 26px -2px / 52px 46px repeat-x;
+  animation: twinkle 2.4s ease-in-out infinite alternate;
+}
+@keyframes twinkle { from { opacity: .7; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .view-plugs #plugs::before { animation: none; } }
+/* plugs hang like stall price tags */
+.view-plugs .plug {
+  position: relative; background: var(--sun); color: var(--ink); border: 0; border-radius: 4px;
+  clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%, 0 16px);
+  padding-top: 34px; transform: rotate(-1.2deg);
+}
+.view-plugs .plug:nth-child(even) { transform: rotate(1.3deg); }
+.view-plugs .plug::before { content: ""; position: absolute; top: 12px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--ink); }
+.view-plugs .plug h3 { color: var(--ink); font: 400 1.5rem/1.05 var(--f-display); text-transform: uppercase; }
+.view-plugs .plug p, .view-plugs .plug-meta { color: var(--ink); opacity: .75; }
+.view-plugs .plug .btn-sun { background: var(--ink); color: var(--sun); border-color: var(--ink); }
+.view-plugs .plug .btn-outline-sun { color: var(--ink); border-color: var(--ink); }
+.view-plugs .plug .badge-verified, .view-plugs .plug .badge-top { background: var(--ink); color: var(--sun); box-shadow: none; }
+/* the Sosick Test as a stamped certificate */
+.view-plugs .test {
+  position: relative; background: #fffdf5; color: var(--ink); border: 6px double var(--ink); border-radius: 4px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .5); transform: rotate(-0.8deg); margin-top: 56px;
+}
+.view-plugs .test .h3 { color: var(--ink); }
+.view-plugs .test-sub, .view-plugs .badge-desc { color: var(--muted); }
+.view-plugs .test-list li { background: transparent; border: 2px solid var(--ink); color: var(--ink); }
+.view-plugs .test-list b { color: var(--ink); }
+.view-plugs .test-list b::before { color: var(--ok); }
+.view-plugs .test::after {
+  content: "TESTED · APPROVED"; position: absolute; right: 22px; bottom: 18px; pointer-events: none;
+  font: 400 1.1rem/1 var(--f-display); letter-spacing: .1em; color: var(--bad);
+  border: 3px solid var(--bad); border-radius: 50%; padding: 22px 14px; transform: rotate(-16deg); opacity: .35;
+}
+@media (max-width: 620px) { .view-plugs .test::after { display: none; } }
+
+/* ---------- INFO: comic strip + matatu route board ---------- */
+.view-info #how {
+  background: var(--sun) radial-gradient(rgba(17, 17, 16, .13) 1.4px, transparent 1.6px) 0 0 / 14px 14px;
+  border-block: 3px solid var(--ink);
+}
+.view-info #how .eyebrow { display: table; }
+.view-info #how .h2 { display: table; background: var(--paper); border: 3px solid var(--ink); padding: 6px 14px 10px; transform: rotate(-1.5deg); box-shadow: var(--shadow); }
+.view-info .steps li { background: #fff; position: relative; padding-top: 18px; }
+.view-info .steps li::after { content: "POW!"; position: absolute; top: -14px; right: 14px; background: var(--sun); border: 2.5px solid var(--ink); font: 400 0.95rem/1 var(--f-display); padding: 5px 8px; transform: rotate(8deg); }
+.view-info .steps li:nth-child(2)::after { content: "ZOOM!"; transform: rotate(-6deg); }
+.view-info .steps li:nth-child(3)::after { content: "DONE!"; }
+.view-info .steps p { position: relative; background: var(--paper); border: 2.5px solid var(--ink); border-radius: 14px; padding: 10px 12px; color: var(--ink); margin-top: 10px; }
+.view-info .steps p::before { content: ""; position: absolute; top: -12px; left: 22px; border: 10px solid transparent; border-bottom-color: var(--ink); border-top: 0; }
+
+.view-info #areas { background: var(--ink); color: var(--paper); }
+.view-info #areas .eyebrow { background: var(--sun); color: var(--ink); }
+.view-info #areas .h2 { color: var(--paper); }
+.view-info #areas .lede { color: var(--muted-ink); }
+.route-sign { display: flex; align-items: center; gap: 10px; color: var(--paper) !important; margin-top: 34px; }
+.route-sign b { background: var(--sun); color: var(--ink); font: 400 1.05rem/1 var(--f-display); letter-spacing: .06em; padding: 7px 10px; border-radius: 4px; }
+.route-sign-soon b { background: transparent; color: var(--sun); border: 2px dashed var(--sun); }
+.view-info .pill-list { gap: 12px 0; position: relative; }
+.view-info .pill-list li { position: relative; background: transparent; border: 0; padding: 0; border-radius: 0;
+  background-image: linear-gradient(var(--sun), var(--sun)); background-size: 100% 4px; background-position: left center; background-repeat: no-repeat; }
+.view-info .pill-list li span { position: relative; display: inline-block; margin: 0 10px 0 0; padding: 6px 12px 6px 26px; background: var(--ink); color: var(--paper); font-weight: 600; font-size: 0.9rem; border: 2px solid var(--line); border-radius: 999px; }
+.view-info .pill-list li span::before { content: ""; position: absolute; left: 8px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--sun); box-shadow: 0 0 0 2px var(--ink), 0 0 0 4px var(--sun); }
+.view-info .pill-list-soon li { background-image: repeating-linear-gradient(90deg, var(--sun) 0 10px, transparent 10px 18px); }
+.view-info .pill-list-soon li span { color: var(--muted-ink); border-style: dashed; }
