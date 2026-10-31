@@ -301,7 +301,8 @@
     mood("happy");
     bot(t("🎲 Rolling… your fit: ", "🎲 Narusha dice… fit yako ni: ") +
       '<div class="msg-card"><b>' + pick(vibes) + "</b><span>👕 " + fit[0] + "<br>👖 " + fit[1] + "<br>👟 " + fit[2] + "<br>✨ " + fit[3] + "</span></div>" +
-      t("Want us to hunt any of these pieces for you?", "Tukuwindie kimoja ya hizi?"), ["🎲 Roll again", "🛵 Order something", "🔌 Find a plug"]);
+      t("Want the full version? Pick a vibe, lock pieces, order the whole fit:", "Unataka version kamili? Chagua vibe, lock pieces, order fit nzima:") +
+      '<div class="msg-card"><a class="btn btn-ink btn-sm" href="outfit.html">🎲 Open Outfit Match</a></div>', ["🎲 Roll again", "🛵 Order something", "🔌 Find a plug"]);
   }
 
   // Haggle game: pure fun, nothing here is a real price or a real discount.

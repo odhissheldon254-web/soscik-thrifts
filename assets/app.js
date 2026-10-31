@@ -422,7 +422,7 @@
   (function () {
     var item = new URLSearchParams(location.search).get("item");
     if (!item) return;
-    $("item").value = item.slice(0, 120);
+    $("item").value = item.slice(0, 480);
     setTimeout(function () {
       var el = $("item"); el.focus({ preventScroll: true });
       el.setSelectionRange(el.value.length, el.value.length);

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Outfit Match · Sosick</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Outfit Match by Sosick: pick a vibe and a budget, get a full fit from Verified Plugs, then order it or share it.">
+<meta name="theme-color" content="#FFD21F">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=202610311713">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="./" aria-label="Sosick home">
+      <img class="brand-mark" src="assets/logo-wordmark.svg" alt="Sosick" width="150" height="44">
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="./#categories">Categories</a>
+      <a href="./#order">Order</a>
+      <a href="./#track">Track</a>
+    </nav>
+    <a class="btn btn-ink btn-sm wa-link" data-wa="Hi Sosick 👋" href="#" target="_blank" rel="noopener">WhatsApp us</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero match-hero">
+    <div class="wrap">
+      <p class="sticker">New · Outfit Match</p>
+      <h1 class="hero-title">Pick a vibe.<br><span class="hl">We build the fit.</span></h1>
+      <p class="hero-sub">Choose the mood and your budget. We put together a full look, matched to sellers we've tested where we can. Lock what you love, shuffle the rest, then order it or send it to the group chat.</p>
+    </div>
+  </section>
+
+  <section class="band band-paper">
+    <div class="wrap">
+      <p class="eyebrow">Step 1</p>
+      <h2 class="h2">What's the<br><span class="hl">vibe?</span></h2>
+      <div class="vibe-grid" id="vibeGrid"></div>
+
+      <div class="match-options">
+        <div>
+          <p class="eyebrow">Step 2</p>
+          <h3 class="h3">Budget for the whole fit</h3>
+          <div class="chips" id="budgetChips" role="radiogroup" aria-label="Budget"></div>
+        </div>
+        <div>
+          <h3 class="h3">Your sizes <span class="opt">optional</span></h3>
+          <div class="sizes">
+            <label class="field">Top<input id="szTop" type="text" placeholder="e.g. M" maxlength="6"></label>
+            <label class="field">Waist<input id="szWaist" type="text" inputmode="numeric" placeholder="e.g. 32" maxlength="6"></label>
+            <label class="field">Shoes<input id="szShoe" type="text" inputmode="numeric" placeholder="e.g. 42" maxlength="6"></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="match-go">
+        <button class="btn btn-ink btn-lg match-btn" type="button" id="matchBtn" disabled>🎲 Match me</button>
+        <span class="note" id="matchHint">Pick a vibe first.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-sun fit-band" id="fitResult" hidden>
+    <div class="wrap">
+      <p class="fit-vibe" id="fitVibe"></p>
+      <h2 class="fit-name" id="fitName"></h2>
+      <div class="fit-cards" id="fitCards"></div>
+      <p class="note" id="fitMsg" aria-live="polite"></p>
+      <div class="fit-actions">
+        <button class="btn btn-ink btn-lg" type="button" id="orderFit">🛵 Order this fit</button>
+        <button class="btn btn-ghost" type="button" id="shuffleBtn">🔄 Shuffle unlocked</button>
+        <button class="btn btn-ghost" type="button" id="shareFit">📤 Share on WhatsApp</button>
+        <button class="btn btn-ghost" type="button" id="askFit">💬 Ask Sosick about it</button>
+      </div>
+      <p class="note fit-fineprint">No made-up prices here. Your budget goes with the order, and we confirm real prices on WhatsApp before anything is bought.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div>
+      <img class="footer-mark" src="assets/logo-wordmark-static.svg" alt="Sosick" width="190" height="56">
+      <p>Pick up, delivery and Verified Plugs in Nairobi.</p>
+    </div>
+    <div>
+      <p class="footer-label">WhatsApp</p>
+      <p class="mono footer-num">0112 275 881</p>
+      <a class="btn btn-sun btn-sm wa-link" data-wa="Hi Sosick 👋" href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
+    </div>
+  </div>
+  <div class="wrap footer-fine">© <span id="year">2026</span> Sosick · Nairobi, Kenya · <a href="privacy.html">Privacy</a></div>
+</footer>
+
+<script src="assets/data.js?v=202610311713"></script>
+<script src="assets/outfit.js?v=202610311713"></script>
+</body>
+</html>

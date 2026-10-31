@@ -18,12 +18,12 @@
       '<span class="cat-count">' + (n ? n + " plug" + (n > 1 ? "s" : "") : "Hunt it") + "</span>" +
       '<span class="cat-name">' + esc(c.short) + "</span></a>";
   }
-  // The fun extra tile: Outfit Match lives in Sosi until it gets its own page.
+  // The fun extra tile: Outfit Match has its own page.
   function matchTile() {
-    return '<button class="cat-tile cat-tile-match" type="button" data-open-sosi="fit" style="--tile:#FFD21F">' +
+    return '<a class="cat-tile cat-tile-match" href="outfit.html" style="--tile:#FFD21F">' +
       '<span class="cat-emoji" aria-hidden="true">🎲</span>' +
-      '<span class="cat-count">Try it</span>' +
-      '<span class="cat-name">Outfit Match</span></button>';
+      '<span class="cat-count">New</span>' +
+      '<span class="cat-name">Outfit Match</span></a>';
   }
   function grid(el, plugs, skipId, withMatch) {
     if (!el) return;
